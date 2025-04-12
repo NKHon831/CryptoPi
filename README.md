@@ -1,4 +1,4 @@
-![CryptoPi Logo](assets/cryptopi_logo.png)
+<img src="assets/cryptopi_logo.png" alt="CryptoPi Logo" width="100"/>
 
 # CryptoPi: Built for Crypto. Powered by Intelligence.
 
