@@ -1,3 +1,11 @@
+## Prelim UM Hackathon 2025: 6thSense
+
+[Canva](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7)
+
+[Lucidchart](https://lucid.app/lucidchart/95860ad1-6bf8-45e8-9e23-ed220dede91e/edit?viewport_loc=5154%2C-1194%2C3409%2C1417%2Cf~U95iUYWTq-&invitationId=inv_282566a2-a946-4eab-b096-b330419bc219)
+
+[Architecture Conceptual Diagram](https://drive.google.com/file/d/1tDgkqI2eCIkOLn0PU1VKwBHUXIocAfIY/view?usp=sharing)
+
 <img src="assets/cryptopi_logo.png" alt="CryptoPi Logo" width="100"/>
 
 # CryptoPi: Built for Crypto. Powered by Intelligence.
@@ -27,7 +35,7 @@ We propose a model-centric backtesting library built for the crypto domain, crea
 
 ## Prototype
 
-Please refer to our pitching deck [here](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7) for more detailed prototype design illustrated through different diagrams and figures.
+Please refer to our pitching deck [here](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7) for more detailed prototype design illustrated through different diagrams and figures. You can also refer to our Lucidchart [here](https://lucid.app/lucidchart/95860ad1-6bf8-45e8-9e23-ed220dede91e/edit?viewport_loc=5154%2C-1194%2C3409%2C1417%2Cf~U95iUYWTq-&invitationId=inv_282566a2-a946-4eab-b096-b330419bc219) for the prototype diagrams.
 
 ### Conceptual Architecture Diagram:
 
