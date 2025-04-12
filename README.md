@@ -27,7 +27,11 @@ We propose a model-centric backtesting library built for the crypto domain, crea
 
 ## Prototype
 
-Please refer to our pitching deck [here](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7) to view the detailed prototype design illustrated through different diagrams and figures.
+Please refer to our pitching deck [here](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7) for more detailed prototype design illustrated through different diagrams and figures.
+
+### Conceptual Architecture Diagram:
+
+<img src="assets\conceptual_architecture_diagram.png" alt="Conceptual Architecture Diagram" width="600"/>
 
 ## Impacts
 
