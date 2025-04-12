@@ -1,3 +1,5 @@
+![CryptoPi Logo](assets/cryptopi_logo.png)
+
 # CryptoPi: Built for Crypto. Powered by Intelligence.
 
 CryptoPi is a proposed Python library tailored for the **UM Hackathon 2025 – Balaena Quant Challenge (Domain 2)**. Our solution directly addresses the challenge of building robust alpha-generating trading strategies using Machine Learning (ML) on **on-chain crypto data**.
