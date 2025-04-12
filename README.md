@@ -31,7 +31,7 @@ Please refer to our pitching deck [here](https://www.canva.com/design/DAGkVzm-wM
 
 ### Conceptual Architecture Diagram:
 
-<img src="assets\conceptual_architecture_diagram.png" alt="Conceptual Architecture Diagram" width="600"/>
+<img src="assets\conceptual_architecture_diagram.png" alt="Conceptual Architecture Diagram" width="900"/>
 
 ## Impacts
 
