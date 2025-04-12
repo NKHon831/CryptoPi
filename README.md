@@ -24,7 +24,7 @@ Traditional backtesting frameworks fall short in the evolving landscape of crypt
 
 ### Pain Points 🚨
 
-1. **Lack of ML Integration**: Most existing backtesting frameworks are not designed with machine learning in mind. Integrating ML pipelines—such as sentiment models, Hidden Markov Models (HMMs), or transformers—requires cumbersome custom code. This lack of native support discourages data-driven strategies and limits the potential for intelligent signal generation.
+1. **Lack of ML Integration**: Most existing backtesting frameworks are not designed with machine learning in mind. Integrating ML pipelines—such as sentiment models, Hidden semi-Markov Models (HSMMs), or transformers—requires cumbersome custom code. This lack of native support discourages data-driven strategies and limits the potential for intelligent signal generation.
 2. **Slow Performance on Large Datasets**: Frameworks like Backtrader, while powerful, are often bottlenecked by Python’s single-threaded performance. Running simulations on high-frequency or long-term historical datasets can become painfully slow, especially when testing multiple strategies or models in parallel.
 3. **Lack of Experiment Tracking and Reproducibility**: Backtest results are difficult to reproduce without manual logging and versioning. There is no standardized way to track which data, models, or parameters were used, making it hard to validate findings or roll back to previous experiments. This severely impacts research transparency and credibility.
 
