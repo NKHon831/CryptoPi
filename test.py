@@ -1,13 +1,12 @@
 from backtesting.datahandler import DataHandler
-from backtesting.strategy import SampleStrategy
-from backtesting.backtest import Backtest
+from backtesting.strategy.strategies.sample_strategy import SampleStrategy
+from backtesting.backtest import BackTest
 
 class Main:
     if __name__ == "__main__":
-        dataHandler = DataHandler([1,2,3,4,5])
-        strategy  = SampleStrategy()
+        dataHandler = DataHandler(data=[1,2,3,4,5])
+        strategy = SampleStrategy()
 
-        backtest = Backtest(strategy, dataHandler)
+        backtest = BackTest(dataHandler, strategy)
 
         backtest.run()
-
