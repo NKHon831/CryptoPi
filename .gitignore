@@ -11,3 +11,9 @@
 # Ignore all files in the models directory, except those in .gitkeep
 # models/**/*
 # !models/**/.gitkeep
+
+# Ignore secrets
+.env
+
+# Ignore Python cache files
+__pycache__/
