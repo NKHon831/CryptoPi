@@ -92,7 +92,7 @@ class BaseDataHandler:
             "flatten": self.flatten
         }
         headers = {
-            "Authorization": "Bearer Jpef9rVtVwUCNHwnAPB7jrnNuqm4YOVCWgMnps61zt2mRNCs"
+            "Authorization": "Bearer " # Load API KEY here from .env
         }
 
         response = requests.get(url, headers=headers, params=params)
