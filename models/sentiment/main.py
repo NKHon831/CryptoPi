@@ -7,7 +7,7 @@ from models.sentiment import analyse
 import json
 import os
 
-def __main__(query="bitcoin OR BTC", fromTimeFrame="2025-04-15T00:00:00Z", toTimeFrame="2025-04-15T23:59:59Z"):
+def execute_sentiment_analysis_workflow(query, fromTimeFrame, toTimeFrame):
   # Get data from news and social media posts
   news_api = news_retrieval.NewsAPI()
   smposts_api = smposts_retrieval.TweepyAPI()
@@ -62,4 +62,4 @@ if __name__ == "__main__":
   query="bitcoin OR BTC"
   fromTimeFrame="2025-04-15T00:00:00Z"
   toTimeFrame="2025-04-15T23:59:59Z"
-  __main__(query, fromTimeFrame, toTimeFrame)
+  execute_sentiment_analysis_workflow(query, fromTimeFrame, toTimeFrame)
