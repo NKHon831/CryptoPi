@@ -1,11 +1,17 @@
+import os
+import logging
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-
+from sklearn.model_selection import train_test_split
 from .base import BaseModel
+
+logging.basicConfig(level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.WARNING)
 
 # TransformerBlock: Implementation of a single transformer block
 class TransformerBlock(nn.Module):
@@ -77,6 +83,13 @@ class TransformerModel(BaseModel):
         self.scaler = StandardScaler()
         self.sequence_length = sequence_length
         self.n_features = n_features
+        
+        # Early stopping configs
+        self.early_stopping = True
+        self.patience = 100
+        self.no_improve_epochs = 0
+        self.checkpoint_path = "transformer_model_checkpoint.pth"
+        self.best_loss = float('inf')
     
     def _preprocess_x(self, X: pd.DataFrame) -> torch.Tensor:
         """
@@ -123,14 +136,32 @@ class TransformerModel(BaseModel):
 
         X_tensor = self._preprocess_x(X)
         y_tensor = self._preprocess_y(y)
-        dataset = TensorDataset(X_tensor, y_tensor)
-        dataloader = DataLoader(dataset=dataset, batch_size=self.batch_size, shuffle=True)
+
+
+        X_np = X_tensor.cpu().numpy()
+        y_np = y_tensor.cpu().numpy()
+
+        X_train_np, X_val_np, y_train_np, y_val_np = train_test_split(
+            X_np, y_np, test_size=0.2, random_state=42, stratify=y_np
+        )
+
+        # Convert back to tensors
+        X_train_tensor = torch.tensor(X_train_np, dtype=torch.float32).to(self.device)
+        y_train_tensor = torch.tensor(y_train_np, dtype=torch.float32).to(self.device)
+        X_val_tensor = torch.tensor(X_val_np, dtype=torch.float32).to(self.device)
+        y_val_tensor = torch.tensor(y_val_np, dtype=torch.float32).to(self.device)
+
+        # Create loaders
+        train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
+        val_dataset = TensorDataset(X_val_tensor, y_val_tensor)
+        train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True)
+        val_loader = DataLoader(val_dataset, batch_size=self.batch_size)
 
         self.model.train()
         for epoch in range(self.epochs):
 
             epoch_loss = 0.0
-            for batch_x, batch_y in dataloader:
+            for batch_x, batch_y in train_loader:
                 batch_x = batch_x.to(self.device)
                 batch_y = batch_y.to(self.device)
 
@@ -141,9 +172,35 @@ class TransformerModel(BaseModel):
                 self.optimizer.step()
 
                 epoch_loss += loss.item()  # Add batch loss to epoch loss
+            avg_train_loss = epoch_loss / len(train_loader)
 
-            # Print epoch loss after each epoch
-            print(f"Epoch {epoch+1}/{self.epochs}, Loss: {epoch_loss/len(dataloader):.4f}")
+            # Validatiion
+            self.model.eval()
+            val_loss = 0.0
+            with torch.no_grad():
+                for batch_x, batch_y in val_loader:
+                    outputs = self.model(batch_x)
+                    loss = self.criterion(outputs, batch_y)
+                    val_loss += loss.item()
+            avg_val_loss = val_loss / len(val_loader)
+
+            logger.info(f"Epoch {epoch+1}/{self.epochs}, Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}")
+
+            # Early stopping logic
+            if self.early_stopping:
+                if avg_val_loss < self.best_loss:
+                    self.best_loss = avg_val_loss
+                    self.no_improve_epochs = 0
+                    torch.save(self.model.state_dict(), self.checkpoint_path)
+                    logger.info("Best model saved.")
+                else:
+                    self.no_improve_epochs += 1
+                    logger.info(f"No improvement. Patience: {self.no_improve_epochs}/{self.patience}")
+                    if self.no_improve_epochs >= self.patience:
+                        logger.info("Early stopping triggered.")
+                        break
+            else:
+                torch.save(self.model.state_dict(), f"transformer_epoch_{epoch+1}.pt")
     
     def predict(self, X:pd.DataFrame) -> pd.Series: 
         """
@@ -153,6 +210,8 @@ class TransformerModel(BaseModel):
         Returns:
         pd.Series: Predicted values.
         """
+        if self.early_stopping and os.path.exists(self.checkpoint_path):
+            self.model.load_state_dict(torch.load(self.checkpoint_path))
         X_tensor = self._preprocess_x(X)
         self.model.eval()
         with torch.no_grad():
