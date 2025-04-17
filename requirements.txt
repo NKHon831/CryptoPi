@@ -14,3 +14,4 @@ emoji==2.14.1
 python-dateutil==2.9.0.post0
 pandas==2.2.3
 plotly==6.0.1
+yfinance==0.2.55
