@@ -1,5 +1,8 @@
 from ..StrategyBase import StrategyBase
 from ...models.alpha.test import FinalAlphaModel
+# from ...constants import Signal
+from backtesting.constants import Signal
+
 
 class SampleStrategy(StrategyBase):
     def __init__(self):
@@ -8,8 +11,8 @@ class SampleStrategy(StrategyBase):
 
     def generate_trading_signal(self, data):
         if(data['high']['BTC'] > 43.2):
-            return self.buy()
+            return Signal.BUY
         else :
-            return self.sell()
+            return Signal.SELL
 
         

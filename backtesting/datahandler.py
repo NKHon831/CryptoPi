@@ -177,6 +177,9 @@ class BaseDataHandler:
 # #         self.window = window
 #         self.preprocess()  # Re-preprocess after changing window
 #         self.generate_features()
+ 
+    def get_window(self):
+        return self.window
 
 handler = BaseDataHandler(symbol='BTC',
                           start_time=datetime(2025, 1, 1),

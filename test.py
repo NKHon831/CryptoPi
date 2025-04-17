@@ -13,4 +13,8 @@ class Main:
         backtest = BackTest(dataHandler, strategy)
         backtest.run() 
         print("Backtest completed.\n")
+
+        print("Portfolio Overview:")
+        portfolio = backtest.get_portfolio()
+        portfolio.overview()
         
