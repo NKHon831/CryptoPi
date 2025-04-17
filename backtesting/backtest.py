@@ -4,11 +4,19 @@ class BackTest:
         self.strategy = strategy    
 
     def run(self):
-        for data in self.dataHandler.get_data():
-            signal = self.strategy.generate_trading_signal(data)
-            if signal == 'BUY':
-                print(f"Buying at {data}")
-            elif signal == 'SELL':
-                print(f"Selling at {data}")
-            else:
-                print(f"No action at {data}")
+        print("\nRunning Backtest...")
+        totalSell = 0
+        totalBuy = 0
+        df_historicalData = self.dataHandler.get_data()
+
+        # print(df_historicalData.head())
+        for index, row in df_historicalData.iterrows():
+            trading_signal = self.strategy.generate_trading_signal(row)
+            if(trading_signal == 1):
+                totalBuy += 1
+            elif(trading_signal == -1):
+                totalSell += 1
+        print("Total Data Points: ", len(df_historicalData))
+        print("Total Buy Signals: ", totalBuy)
+        print("Total Sell Signals: ", totalSell)
+
