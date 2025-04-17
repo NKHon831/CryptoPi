@@ -188,7 +188,7 @@ class StrategyVisualisation(MarketVisualisation):
     )
 
     self.charts["Price Chart with Signals"] = fig
-    print("Price Chart created and added to charts list.")
+    print("Price Chart With Signals created and added to charts list.")
 
     return fig
 
@@ -220,8 +220,8 @@ class StrategyVisualisation(MarketVisualisation):
 
     for chart_name in required_charts:
       if chart_name not in self.charts:
-        if chart_name in self.charts_mapping:
-          self.charts[chart_name] = self.charts_mapping[chart_name]()
+        if chart_name in self.chart_mapping:
+          self.charts[chart_name] = self.chart_mapping[chart_name]()
         else:
           raise ValueError(f"Chart '{chart_name}' is not supported.")
 
