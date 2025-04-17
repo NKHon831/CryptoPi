@@ -1,6 +1,7 @@
 # Syntax: <package-name>==<version>
 # pandas==2.2.1
 # numpy==1.26.4
+# yfinance==0.2.55
 
 python-dotenv==1.1.0
 requests==2.32.3
@@ -12,3 +13,4 @@ tweepy==4.15.0
 nltk==3.9.1
 emoji==2.14.1
 python-dateutil==2.9.0.post0
+yfinance==0.2.55
