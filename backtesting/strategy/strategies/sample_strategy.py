@@ -7,9 +7,9 @@ class SampleStrategy(StrategyBase):
         self.finalAlphaModel = FinalAlphaModel()
 
     def generate_trading_signal(self, data):
-        predicted_signal = self.finalAlphaModel.predict()
-        if predicted_signal % 2 == 0 :
+        if(data['high']['BTC'] > 43.2):
             return self.buy()
-        else:
+        else :
             return self.sell()
+
         
