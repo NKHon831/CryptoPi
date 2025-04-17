@@ -43,3 +43,26 @@ def convert_JSON_df(JSON_path):
   # df.set_index('datetime', inplace=True)
 
   return df
+
+def convert_JSON_dict(JSON_path):
+  with open(JSON_path, 'r') as f:
+    data = json.load(f)
+
+  formatted_data = {}
+
+  # Loop through each strategy and extract its data
+  for strategy, values in data.items():
+    formatted_data[strategy] = {}
+
+    # Loop through all keys in the current strategy and add them to the dictionary
+    for key, value in values.items():
+      formatted_data[strategy][key] = value
+
+  return formatted_data
+
+def convert_MetricsJSON_dict(JSON_path):
+  with open(JSON_path, 'r') as file:
+    metrics_data = json.load(file)
+    
+  # Return the dictionary containing the performance metrics
+  return metrics_data
