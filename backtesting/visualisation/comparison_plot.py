@@ -18,6 +18,3 @@ class ComparisonPlot:
 
   def export_comparison_charts(self, charts, format):
     pass
-
-  # def interactive_comparison_dashboard(self):
-  #   pass

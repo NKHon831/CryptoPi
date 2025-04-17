@@ -2,9 +2,6 @@
 
 from backtesting.visualisation.visualisation import MarketVisualisation, StrategyVisualisation
 from backtesting.visualisation.tools import convert_CSV_df, reformatDates, convert_JSON_df
-# import matplotlib.pyplot as plt
-
-# def test_plot():
 
 if __name__ == '__main__':
   market_df = reformatDates(convert_CSV_df('backtesting/visualisation/__pycache__/example_market_data.csv', 2))

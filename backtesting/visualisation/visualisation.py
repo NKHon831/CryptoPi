@@ -6,10 +6,8 @@ class MarketVisualisation:
   def __init__(self, market_data):
     self.market_data = market_data
     self.charts = {}
-    # self.style = style
 
   def plot_price_chart(self, title='BTC-USD Price Chart'):
-    # Plot candlestick chart using raw market data
     df = self.market_data.copy()
     
     fig = go.Figure(data=[go.Candlestick(
@@ -252,6 +250,3 @@ class StrategyVisualisation(MarketVisualisation):
     self.market_data = market_data
     super().__init__(market_data)
     self.chart_mapping["Price Chart"] = self.plot_price_chart
-  
-  # def interactive_dashboard(self):
-  #   pass
