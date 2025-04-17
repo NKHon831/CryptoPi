@@ -183,7 +183,7 @@ handler = BaseDataHandler(symbol='BTC',
                           end_time=datetime(2025, 4, 15),
                           window="1h")
 # handler.export("/Users/pohsharon/Downloads/UMH")
-print(handler.processed_data.head())
+# print(handler.processed_data.head())
 
 # class DataHandler:
 #     def __init__(self, data):

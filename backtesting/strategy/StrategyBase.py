@@ -8,8 +8,15 @@ class StrategyBase:
 
     def buy(self):
         #implement buy logic here
-        return 'BUY'
+        return 1
+    
+    def hold(self):
+        #implement hold logic here
+        return 0
     
     def sell(self):
         #implement sell logic here
-        return 'SELL'
+        return -1
+    
+
+    # 0 -> hold , 1 -> buy , -1 -> sell
