@@ -31,6 +31,26 @@ class Portfolio:
     
     def add_closed_trade(self, closed_trade : Trade):
         self.closed_trades.append(closed_trade)
+    
+    def get_pending_orders(self):
+        return self.pending_orders
+    
+    def send_pending_orders(self):
+        pending_orders = self.pending_orders.copy()
+        self.pending_orders.clear()
+        return pending_orders
+
+    def get_cancelled_orders(self):
+        return self.cancelled_orders
+    
+    def get_executed_orders(self):
+        return self.executed_orders
+    
+    def get_active_trades(self):
+        return self.active_trades
+    
+    def get_closed_trades(self):
+        return self.closed_trades
 
     def buy(self):
         #implement buy logic here
@@ -43,6 +63,12 @@ class Portfolio:
     def sell(self):
         #implement sell logic here
         return -1
+    
+    def update_records(self, records):
+        self.executed_orders.extend(records['executed_orders'])
+        self.cancelled_orders.extend(records['cancelled_orders'])
+        self.active_trades.extend(records['active_trades'])    
+        self.closed_trades.extend(records['closed_trades'])
 
     def overview(self):
         print('Pending Orders:', len(self.pending_orders))

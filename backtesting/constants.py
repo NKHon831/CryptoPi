@@ -4,6 +4,26 @@ class Signal:
     HOLD = 'HOLD'
     TRADING_SIGNALS = [ BUY , SELL ]
 
+class ExecutionType:
+    OPEN = 'OPEN'
+    CLOSE = 'CLOSE'
+    HIGH = 'HIGH'
+    LOW = 'LOW'
+
+class ExecutionInterval:
+    MINUTE = 'MINUTE'
+    HOUR = 'HOUR'
+    DAY = 'DAY'
+    WEEK = 'WEEK'
+
+class OrderExecutionStatus:
+    OPEN = 'OPEN' 
+    CLOSED = 'CLOSED'
+    FAILED = 'FAILED'
+    SUCCESS = [ OPEN , CLOSED]
+
+
+
 
 
 

@@ -1,6 +1,8 @@
 from ..StrategyBase import StrategyBase
 from ...models.alpha.test import FinalAlphaModel
-from ...constants import Signal
+# from ...constants import Signal
+from backtesting.constants import Signal
+
 
 class SampleStrategy(StrategyBase):
     def __init__(self):
