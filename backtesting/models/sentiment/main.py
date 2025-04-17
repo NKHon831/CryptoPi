@@ -1,4 +1,4 @@
-# python -m models.sentiment.main
+# python -m backtesting.models.sentiment.main
 # execute whole workflow of sentiment analysis model
 
 from .data import news_retrieval, smposts_retrieval
