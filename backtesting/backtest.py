@@ -20,10 +20,8 @@ class BackTest:
         self.broker = broker
 
     def run(self):
-        print("\nRunning Backtest...")
+        print("\nRunning backtest...")
         df_historicalData = self.dataHandler.get_data()
-
-        # print(df_historicalData.head())
 
         # Iterate through all historical data rows to backtest
         for index, row in df_historicalData.iterrows():
@@ -37,6 +35,11 @@ class BackTest:
             if trading_signal in Signal.TRADING_SIGNALS:
                 new_order = Order.create(row)
                 self.portfolio.add_pending_order(new_order)
+        print("\nBacktest completed.")
+
+        # Visualise porfolio stats
+        print("\nPortfolio Overview:")
+        self.portfolio.overview()
 
     def get_portfolio(self):
         return self.portfolio
