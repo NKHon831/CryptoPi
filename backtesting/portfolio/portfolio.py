@@ -6,7 +6,7 @@ class Portfolio:
     def __init__(
             self, 
             holdings = 0.0, 
-            wallet = 0.0,
+            wallet = 10000,
             investment_rate = 0.01, # 1% of the portfolio equity/wallet is used for each order
             shorting_preference = 1 # All holdings is used for shorting / Assume short is just sell what we hold
         ):

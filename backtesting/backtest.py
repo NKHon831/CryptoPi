@@ -29,20 +29,20 @@ class BackTest:
         for datetime, data in df_historicalData.iterrows():
             # pending orders execution
             if self.portfolioManager.portfolio.get_pending_orders() :
-                results = self.broker.execute_orders(self.portfolioManager.send_pending_orders(), data, datetime)
+                results = self.broker.execute_orders(self.portfolioManager.send_pending_orders(), self.portfolioManager.portfolio.wallet , data, datetime)
                 self.portfolioManager.update_orders(results)
 
             # Trading signal generation and Order creation for current row
             trading_signal = self.strategy.generate_trading_signal(data)
             if trading_signal in Signal.TRADING_SIGNALS:
-                new_order = Order(1, 1, trading_signal, 1, 1)
-                self.portfolioManager.portfolio.add_pending_order(new_order)
+                self.portfolioManager.generate_order(trading_signal, data)
+
         print("\nBacktest completed.")
 
         # Visualise porfolio stats
         print("\nPortfolio Overview:")
         self.portfolioManager.portfolio.overview()
 
-        # print("Trade history\n")
-        # for trade in self.portfolioManager.portfolio.get_all_trades():
-        #     print(trade)
+        print("Trade history\n")
+        for trade in self.portfolioManager.portfolio.get_all_trades():
+            print(trade)

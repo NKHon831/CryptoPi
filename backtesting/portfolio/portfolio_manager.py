@@ -1,7 +1,7 @@
 from backtesting.portfolio.portfolio import Portfolio
 from backtesting.execution.Order import Order
 from backtesting.execution.Trade import Trade
-from backtesting.constants import MarketEntryType, TradeStatus
+from backtesting.constants import MarketEntryType, TradeStatus, Signal
 
 class PortfolioManager:
 
@@ -17,15 +17,26 @@ class PortfolioManager:
         return pending_orders
 
     def update_orders(self, orders):
-        executed_orders = orders['executed_orders']
-        cancelled_orders = orders['cancelled_orders']
-        
+        executed_orders : list[Order] = orders['executed_orders']
+        cancelled_orders : list[Order] = orders['cancelled_orders']
+
+        for order in executed_orders: 
+
+            match order.market_entry_type:
+                case MarketEntryType.LONG:
+                    self.portfolio.holdings += order.quantity
+                case MarketEntryType.SHORT:
+                    self.portfolio.holdings -= order.quantity
+                case _:
+                    pass
+
         self.portfolio.add_executed_orders(executed_orders)
         self.portfolio.add_cancelled_orders(cancelled_orders)
 
         self.update_trades(executed_orders)
 
     def update_trades(self, executed_orders : list[Order]):
+
         for order in executed_orders:
             if self.portfolio.has_open_trades():
 
@@ -47,10 +58,20 @@ class PortfolioManager:
             elif not self.portfolio.has_open_trades():
                 new_trade = Trade.create(order)
                 self.portfolio.add_open_trade(new_trade)
-    
+
+    def generate_order(self, trading_signal : Signal, current_market_data):
+        quantity_to_trade = self.calculate_quantity_to_trade(trading_signal, current_market_data)
+
+        # No price_limit, stop_loss price, desired_price logic
+        new_order = Order(trading_signal, quantity_to_trade)
+        # if(new_order.quantity == 0):
+        #     print("Order with 0 quantity")
+        #     print(new_order)
+        self.portfolio.add_pending_order(new_order)
+
     def closing_trade(self, executed_order : Order, open_trades : list[Trade]):
         order_quantity_to_close = executed_order.quantity
-
+        
         while order_quantity_to_close > 0:
             if(len(open_trades) == 0):
                 new_trade = Trade.create(executed_order, order_quantity_to_close)
@@ -74,6 +95,20 @@ class PortfolioManager:
                 # Close the trade and move it from open_trades to closed_trades
                 closed_trade = open_trades.pop()
                 self.portfolio.add_closed_trade(closed_trade)
+
+    def calculate_quantity_to_trade(self, trading_signal : Signal, current_market_data):
+        quantity_to_trade = 0.0
+        current_market_price = current_market_data['close']['BTC']
+        current_portfolio_equity_value = self.portfolio.get_equity_value(current_market_price)
+
+        if(trading_signal is Signal.BUY):
+            quantity_to_trade = self.portfolio.investment_rate * current_portfolio_equity_value / current_market_price
+
+        elif(trading_signal is Signal.SELL):
+            quantity_to_trade = self.portfolio.shorting_preference * self.portfolio.holdings
+
+        return quantity_to_trade
+
 
 
                 
