@@ -32,28 +32,21 @@ class BaseDataHandler:
         self.raw_data: pd.DataFrame = pd.DataFrame()
         self.processed_data: pd.DataFrame = pd.DataFrame()
 
-        # Fetch OHLC
-        self.fetch_yfinance_data()
-
-        # Fetch funding rate
-        funding_params = {
-            "exchange": "binance",
-            "window": "hour",
-            "start_time": self.start_time,
-            "end_time": self.end_time,
-            "flatten": "true",
-            # "limit": 2
-        }
-
-        # Derive log return, volatility
-        self.preprocess()
-
     def convert_to_unix_ms(self, dt: datetime) -> int:
         return int(dt.timestamp() * 1000)
 
     def load_from_disc(self, path: str):
         self.raw_data = pd.read_csv(path)
+    
+    def get_processed_data(self) -> pd.DataFrame:
+        return self.processed_data
 
+    def export(self, path: str):
+        # Save the processed data to the specified path with the symbol in the filename
+        self.processed_data.to_csv(f"{path}/{self.symbol}_data.csv")
+        print(f"Data exported to {path}/{self.symbol}_data.csv")
+
+class RegimeModelData(BaseDataHandler):
     def fetch_yfinance_data(self):
         interval = self.window if self.window in ['1m', '2m', '5m', '15m', '30m', '1h', '90m', '1d'] else '1h'
         data = yf.download(
@@ -76,9 +69,6 @@ class BaseDataHandler:
         data.dropna(inplace=True)
         self.raw_data = data
     
-    def get_processed_data(self) -> pd.DataFrame:
-        return self.processed_data
-
     def preprocess(self):
         df = self.raw_data
         df.sort_index(inplace=True)
@@ -199,16 +189,154 @@ class BaseDataHandler:
     def compute_obv_vectorized(self, df):
         direction = np.sign(df["close"].diff()).fillna(0)
         return (direction * df["volume"]).cumsum()
-    
-    def export(self, path: str):
-        # Save the processed data to the specified path with the symbol in the filename
-        self.processed_data.to_csv(f"{path}/{self.symbol}_data.csv")
-        print(f"Data exported to {path}/{self.symbol}_data.csv")
 
-# Test the BaseDataHandler class
-handler = BaseDataHandler(symbol='BTC-USD',
+class FinalAlphaModelData(BaseDataHandler):
+    def __init__(self, symbol, start_time, end_time, **kwargs):
+        super().__init__(symbol, start_time, end_time, **kwargs)
+        self.api_key = "Jpef9rVtVwUCNHwnAPB7jrnNuqm4YOVCWgMnps61zt2mRNCs" # os.getenv("CYBOTRADE_API_KEY") 
+        self.base_url = "https://api.datasource.cybotrade.rs"
+        self.headers = {"X-api-key": self.api_key}
+
+        # Global parameters for most endpoints
+        self.common_params = {
+            "a": symbol,
+            "i": self.window,
+            "start_time": self.start_time,
+            "end_time": self.end_time,
+        }
+
+        # Endpoint-specific configuration
+        self.endpoint_config = {
+            "glassnode/addresses/min_10k_count": {}, # add_10_k
+            "glassnode/addresses/min_100_count": {}, # add_100_btc
+            "glassnode/addresses/new_non_zero_count": {}, # new_adds
+            # "glassnode/addresses/accumulation_count": {}, # new_adds
+            # "glassnode/addresses/count": {}, # total_adds
+            # "glassnode/supply/active_more_1y_percent": {}, # s_last_act_1y
+            # "glassnode/blockchain/block_count": {}, # blocks_mined
+            # "glassnode/mining/hash_rate_mean": {}, # hash_rate
+            # "glassnode/supply/inflation_rate": {}, # inflat_rate
+            # "glassnode/mining/revenue_from_fees": {}, # min_rev_fees
+            # "glassnode/distribution/balance_exchanges": {}, # ex_balance
+            # "glassnode/distribution/balance_exchanges": {"a": "USDT"}, # ex_balance_usdt
+            # "glassnode/transactions/transfers_to_exchanges_count_pit": {}, # ex_deposits
+            # "glassnode/transactions/transfers_volume_to_exchanges_sum": {}, # ex_inflow_vol
+            # # ex_inflow_total
+            # # "glassnode/distribution/exchange_net_position_change_pit": {"i": "24h"}, (Only allow window=24h) # net_pos_chan
+            # # "glassnode/distribution/exchange_net_position_change_pit": {"i": "24h", "a": "USDT"}, (Only allow window=24h) # net_pos_usdt 
+            # "glassnode/transactions/transfers_volume_exchanges_net_pit": {}, # netflow_vol
+            # # "glassnode/transactions/transfers_volume_exchanges_net_pit": {"a": "USDT"}, # netflow_vol_usdt
+            # "glassnode/transactions/transfers_volume_from_exchanges_mean_pit": {}, # outflow_mean
+            # "glassnode/transactions/transfers_volume_from_exchanges_sum_pit": {}, # outflow_total
+            # "glassnode/transactions/transfers_from_exchanges_count_pit": {}, # withdrawals
+            # "glassnode/indicators/net_realized_profit_loss": {}, # profit_loss
+            # "glassnode/indicators/net_unrealized_profit_loss": {}, # nupl
+            # # utx_profit
+            # "glassnode/indicators/realized_loss": {}, # real_loss
+            # # p_l_ration
+            # "glassnode/indicators/realized_profit": {}, # real_profit
+            # "glassnode/indicators/sopr": {}, # sopr
+            # "glassnode/supply/loss_sum": {}, # supply_loss
+            # # "glassnode/indicators/difficulty_ribbon": {"i": "24h"}, (Only allows window=24h) # dif_ribbon
+            # # ent_adj_count
+            # "glassnode/transactions/transfers_volume_entity_adjusted_sum_pit": {}, # ent_vol_total
+            # "glassnode/transactions/transfers_volume_within_exchanges_sum_pit": {}, # in_house_vol
+            # "glassnode/transactions/transfers_volume_between_exchanges_sum_pit": {}, # inter_ex
+            # "glassnode/indicators/liveliness": {}, # liveliness
+            # "glassnode/indicators/nvt": {}, # nvt_ratio
+            # "glassnode/indicators/nvts": {}, # nvts_signal
+            # "glassnode/indicators/reserve_risk": {}, # reserve_risk
+            # "glassnode/indicators/rhodl_ratio": {}, # rhodl_ratio
+            # "glassnode/indicators/seller_exhaustion_constant": {}, # seller_exhaustion
+            # "glassnode/indicators/stock_to_flow_deflection": {}, # s_flow_def1
+            # # "glassnode/transactions/transfers_count": {}, # Not sure why does not support BTC # tra_count
+            # "glassnode/blockchain/utxo_created_count": {}, # utx_created
+            # "glassnode/indicators/velocity": {}, # velocity
+        }
+
+    def fetch_all_endpoints(self):
+        import pandas as pd
+        from functools import reduce
+
+        all_data = {}
+        headers = {
+            "X-Api-Key": self.api_key
+        }
+
+        # Fetch data from each endpoint
+        for endpoint, custom_params in self.endpoint_config.items():
+            print(f"Fetching: /{endpoint}")
+            url = f"{self.base_url}/{endpoint}"
+            params = self.common_params.copy()
+
+            if custom_params:
+                params.update(custom_params)
+
+            try:
+                response = requests.get(url, headers=headers, params=params)
+                response.raise_for_status()
+                data = response.json()
+
+                if 'data' not in data or not data['data']:
+                    raise ValueError("Empty or missing 'data' field in response")
+
+                df = pd.json_normalize(data['data'])
+                df.columns = [f"{endpoint}_{col}" for col in df.columns]
+
+                # Rename timestamp column if possible
+                timestamp_col = next((col for col in df.columns if col.endswith("start_time")), None)
+                if timestamp_col:
+                    df.rename(columns={timestamp_col: "timestamp"}, inplace=True)
+
+                all_data[endpoint] = df
+
+            except Exception as e:
+                print(f"❌ Error fetching /{endpoint}: {e}")
+                all_data[endpoint] = pd.DataFrame()
+
+        # Filter only DataFrames with 'timestamp'
+        dataframes = [df for df in all_data.values() if "timestamp" in df.columns]
+
+        # Merge on 'timestamp'
+        if dataframes:
+            try:
+                combined_df = reduce(lambda left, right: pd.merge(left, right, how="outer", on="timestamp"), dataframes)
+            except Exception as e:
+                print(f"❌ Error during merging: {e}")
+                combined_df = pd.DataFrame()
+        else:
+            print("⚠️ No dataframes with a 'timestamp' column to merge.")
+            combined_df = pd.DataFrame()
+
+        self.raw_data = combined_df
+        self.processed_data = combined_df
+
+        # Convert timestamp to datetime
+        if "timestamp" in self.processed_data.columns:
+            self.processed_data["timestamp"] = pd.to_datetime(self.processed_data["timestamp"], unit="ms")
+            print("✅ Timestamp column converted to datetime.")
+        else:
+            print("⚠️ 'timestamp' column not found in processed_data.")
+
+        return combined_df  
+ 
+# Test the RegimeModelData class
+# handler = RegimeModelData(symbol='BTC-USD',
+#                           start_time=datetime(2025, 1, 1),
+#                           end_time=datetime(2025, 4, 16),
+#                           window="hour")
+# handler.fetch_yfinance_data()
+# handler.preprocess()
+# handler.export("/Users/pohsharon/Downloads/UMH")
+# print(handler.processed_data.tail())
+
+# Test the FinalAlphaModel class
+model = FinalAlphaModelData(symbol='BTC',
                           start_time=datetime(2025, 1, 1),
-                          end_time=datetime(2025, 4, 16),
-                          window="hour")
-handler.export("/Users/pohsharon/Downloads/UMH")
-print(handler.processed_data.tail())
+                          end_time=datetime(2025, 1, 3),
+                          window="1h")
+
+df = model.fetch_all_endpoints()
+model.export("/Users/pohsharon/Downloads/UMH") # Change path to your desired export path
+print(df.head())
+
