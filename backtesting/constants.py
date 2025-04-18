@@ -16,11 +16,20 @@ class ExecutionInterval:
     DAY = 'DAY'
     WEEK = 'WEEK'
 
-class OrderExecutionStatus:
-    OPEN = 'OPEN' 
+class OrderStatus:
+    PENDING = 'PENDING'
+    EXECUTED = 'EXECUTED'
+    CANCELLED = 'CANCELLED'
+
+class TradeStatus:
+    OPEN = 'OPEN'
     CLOSED = 'CLOSED'
-    FAILED = 'FAILED'
-    SUCCESS = [ OPEN , CLOSED]
+
+# class OrderExecutionStatus:
+#     OPEN = 'OPEN' 
+#     CLOSED = 'CLOSED'
+#     FAILED = 'FAILED'
+#     SUCCESS = [ OPEN , CLOSED]
 
 
 

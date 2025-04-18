@@ -1,22 +1,34 @@
-from .execution.Order import Order
-from .execution.Trade import Trade
+from ..execution.Order import Order
+from ..execution.Trade import Trade
 
 class Portfolio:
-    def __init__(self, holdings = 0.0, wallet = 0.0):
+    def __init__(
+            self, 
+            holdings = 0.0, 
+            wallet = 0.0,
+            investment_rate = 0.01, # 1% of the portfolio equity/wallet is used for each order
+            shorting_preference = 1 # All holdings is used for shorting / Assume short is just sell what we hold
+        ):
         self.pending_orders  = []
         self.cancelled_orders = []
         self.executed_orders = []
-        self.active_trades = []
+        self.active_trades = {
+            'long'  : [],
+            'short' : []
+        }
         self.closed_trades = []
         self.performance = None # Implement performance evaluation
         self.position = None # Dont support position yet
         self.wallet = wallet
         self.holdings = holdings
+        self.equity = self.get_equity_value()
+        self.investment_rate = investment_rate
+        self.shorting_preference = shorting_preference
     
-    def get_performance(self):
-        # Retrieve portfolio's performance 
-        pass
+    def get_equity_value(self, market_price = 0.0):
+        return self.wallet + self.holdings * market_price
 
+    # Add one order/trade
     def add_pending_order(self, pending_order : Order):
         self.pending_orders.append(pending_order)
     
@@ -31,6 +43,13 @@ class Portfolio:
     
     def add_closed_trade(self, closed_trade : Trade):
         self.closed_trades.append(closed_trade)
+
+    # Add multiple orders/trades
+    def add_executed_orders(self, executed_orders : list[Order]):
+        self.executed_orders.extend(executed_orders)
+    
+    def add_cancelled_orders(self, cancelled_orders : list[Order]):
+        self.cancelled_orders.extend(cancelled_orders)
     
     def get_pending_orders(self):
         return self.pending_orders
@@ -51,24 +70,15 @@ class Portfolio:
     
     def get_closed_trades(self):
         return self.closed_trades
+    
+    # def update_orders(self, orders):
+    #     executed_orders = orders['executed_orders']
+    #     cancelled_orders = orders['cancelled_orders']
+        
+    #     self.executed_orders.extend(executed_orders)
+    #     self.cancelled_orders.extend(cancelled_orders)
 
-    def buy(self):
-        #implement buy logic here
-        return 1
-    
-    def hold(self):
-        #implement hold logic here
-        return 0
-    
-    def sell(self):
-        #implement sell logic here
-        return -1
-    
-    def update_records(self, records):
-        self.executed_orders.extend(records['executed_orders'])
-        self.cancelled_orders.extend(records['cancelled_orders'])
-        self.active_trades.extend(records['active_trades'])    
-        self.closed_trades.extend(records['closed_trades'])
+    #     self.update_trades(self, executed_orders)
 
     def overview(self):
         print('Pending Orders:', len(self.pending_orders))

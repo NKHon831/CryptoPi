@@ -1,10 +1,11 @@
-from backtesting.portfolio import Portfolio
+from backtesting.portfolio.portfolio import Portfolio
 from backtesting.datahandler import BaseDataHandler
 from backtesting.strategy.StrategyBase import StrategyBase
 from backtesting.constants import Signal
 from backtesting.execution.Order import Order
 from backtesting.execution.broker.brokers.DefaultBroker import DefaultBroker
 from backtesting.execution.broker.BrokerBase import BrokerBase
+from backtesting.portfolio.portfolio_manager import PortfolioManager
 
 class BackTest:
     def __init__(
@@ -28,7 +29,7 @@ class BackTest:
 
             # pending orders execution
             results = self.broker.execute_orders(self.portfolio.send_pending_orders())
-            self.portfolio.update_records(results)
+            PortfolioManager.update_orders(self.portfolio, results)
 
             # Trading signal generation and Order creation for current row
             trading_signal = self.strategy.generate_trading_signal(row)

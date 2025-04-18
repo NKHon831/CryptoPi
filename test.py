@@ -12,3 +12,5 @@ class Main:
         strategy = SampleStrategy()
         backtest = BackTest(dataHandler, strategy)
         backtest.run() 
+
+        #forward test later
