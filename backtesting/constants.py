@@ -24,6 +24,10 @@ class OrderStatus:
 class TradeStatus:
     OPEN = 'OPEN'
     CLOSED = 'CLOSED'
+ 
+class MarketEntryType:
+    LONG = 'LONG'
+    SHORT = 'SHORT'
 
 # class OrderExecutionStatus:
 #     OPEN = 'OPEN' 

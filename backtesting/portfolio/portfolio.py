@@ -1,5 +1,6 @@
 from ..execution.Order import Order
 from ..execution.Trade import Trade
+from ..constants import MarketEntryType
 
 class Portfolio:
     def __init__(
@@ -12,9 +13,9 @@ class Portfolio:
         self.pending_orders  = []
         self.cancelled_orders = []
         self.executed_orders = []
-        self.active_trades = {
-            'long'  : [],
-            'short' : []
+        self.open_trades = {
+            MarketEntryType.LONG : [],
+            MarketEntryType.SHORT : []
         }
         self.closed_trades = []
         self.performance = None # Implement performance evaluation
@@ -28,6 +29,12 @@ class Portfolio:
     def get_equity_value(self, market_price = 0.0):
         return self.wallet + self.holdings * market_price
 
+    def has_open_trades(self):
+        long_open_trades = self.open_trades[MarketEntryType.LONG]
+        short_open_trades = self.open_trades[MarketEntryType.SHORT]
+        
+        return long_open_trades or short_open_trades
+
     # Add one order/trade
     def add_pending_order(self, pending_order : Order):
         self.pending_orders.append(pending_order)
@@ -38,8 +45,8 @@ class Portfolio:
     def add_cancelled_order(self, cancelled_order : Order):
         self.cancelled_orders.append(cancelled_order)
 
-    def add_active_trade(self, active_trade : Trade):
-        self.active_trades.append(active_trade)
+    def add_open_trade(self, trade : Trade):
+        self.open_trades[trade.market_entry_type].append(trade)
     
     def add_closed_trade(self, closed_trade : Trade):
         self.closed_trades.append(closed_trade)
@@ -53,11 +60,6 @@ class Portfolio:
     
     def get_pending_orders(self):
         return self.pending_orders
-    
-    def send_pending_orders(self):
-        pending_orders = self.pending_orders.copy()
-        self.pending_orders.clear()
-        return pending_orders
 
     def get_cancelled_orders(self):
         return self.cancelled_orders
@@ -65,24 +67,20 @@ class Portfolio:
     def get_executed_orders(self):
         return self.executed_orders
     
-    def get_active_trades(self):
-        return self.active_trades
+    def get_open_trades(self):
+        return self.open_trades
     
     def get_closed_trades(self):
         return self.closed_trades
     
-    # def update_orders(self, orders):
-    #     executed_orders = orders['executed_orders']
-    #     cancelled_orders = orders['cancelled_orders']
-        
-    #     self.executed_orders.extend(executed_orders)
-    #     self.cancelled_orders.extend(cancelled_orders)
-
-    #     self.update_trades(self, executed_orders)
+    def get_all_trades(self):
+        return (self.open_trades[MarketEntryType.LONG] + self.open_trades[MarketEntryType.SHORT] + self.closed_trades)
 
     def overview(self):
         print('Pending Orders:', len(self.pending_orders))
         print('Cancelled Orders:', len(self.cancelled_orders))
         print('Executed Orders:', len(self.executed_orders))
-        print('Active trades:', len(self.active_trades))
+        print('Open trades:')
+        print("LONG: ", len(self.open_trades[MarketEntryType.LONG]))
+        print("SHORT: ", len(self.open_trades[MarketEntryType.SHORT]))
         print('Closed trades:', len(self.closed_trades))

@@ -1,7 +1,7 @@
 from backtesting.portfolio.portfolio import Portfolio
 from backtesting.datahandler import BaseDataHandler
 from backtesting.strategy.StrategyBase import StrategyBase
-from backtesting.constants import Signal
+from backtesting.constants import Signal, MarketEntryType
 from backtesting.execution.Order import Order
 from backtesting.execution.broker.brokers.DefaultBroker import DefaultBroker
 from backtesting.execution.broker.BrokerBase import BrokerBase
@@ -12,12 +12,13 @@ class BackTest:
         self, 
         dataHandler : BaseDataHandler, 
         strategy : StrategyBase, 
-        portfolio : Portfolio = Portfolio(),
+        # portfolio : Portfolio = Portfolio(),
+        portfolioManager : PortfolioManager = PortfolioManager(),
         broker : BrokerBase = DefaultBroker()
     ):
         self.dataHandler = dataHandler
         self.strategy = strategy 
-        self.portfolio = portfolio   
+        self.portfolioManager = portfolioManager   
         self.broker = broker
 
     def run(self):
@@ -25,23 +26,23 @@ class BackTest:
         df_historicalData = self.dataHandler.get_data()
 
         # Iterate through all historical data rows to backtest
-        for index, row in df_historicalData.iterrows():
-
+        for datetime, data in df_historicalData.iterrows():
             # pending orders execution
-            results = self.broker.execute_orders(self.portfolio.send_pending_orders())
-            PortfolioManager.update_orders(self.portfolio, results)
+            if self.portfolioManager.portfolio.get_pending_orders() :
+                results = self.broker.execute_orders(self.portfolioManager.send_pending_orders(), data, datetime)
+                self.portfolioManager.update_orders(results)
 
             # Trading signal generation and Order creation for current row
-            trading_signal = self.strategy.generate_trading_signal(row)
+            trading_signal = self.strategy.generate_trading_signal(data)
             if trading_signal in Signal.TRADING_SIGNALS:
-                new_order = Order.create(row)
-                self.portfolio.add_pending_order(new_order)
+                new_order = Order(1, 1, trading_signal, 1, 1)
+                self.portfolioManager.portfolio.add_pending_order(new_order)
         print("\nBacktest completed.")
 
         # Visualise porfolio stats
         print("\nPortfolio Overview:")
-        self.portfolio.overview()
+        self.portfolioManager.portfolio.overview()
 
-    def get_portfolio(self):
-        return self.portfolio
-
+        # print("Trade history\n")
+        # for trade in self.portfolioManager.portfolio.get_all_trades():
+        #     print(trade)
