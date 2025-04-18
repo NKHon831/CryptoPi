@@ -34,7 +34,7 @@ class BackTest:
                 self.portfolioManager.update_orders(results)
 
             # Trading signal generation and Order creation for current row
-            trading_signal = self.strategy.generate_trading_signal(data)
+            trading_signal = self.strategy.generate_trading_signal(data, datetime)
             if trading_signal in Signal.TRADING_SIGNALS:
                 self.portfolioManager.generate_order(trading_signal, data)
 
