@@ -41,7 +41,7 @@ class StrategyVisualisation(MarketVisualisation):
       "Equity Curve": self.plot_equity_curve,
       "Performance Metrics": self.tabulate_metrics,
       "Daily Returns": self.plot_daily_returns,
-      "Price Chart with Signals": self.plot_price_with_signals
+      # "Price Chart with Signals": self.plot_price_with_signals
     }
     self.charts = {}
     if market_data is not None:
@@ -50,16 +50,18 @@ class StrategyVisualisation(MarketVisualisation):
       self.chart_mapping["Price Chart"] = self.plot_price_chart
   
   def plot_equity_curve(self, title="Equity Curve"):
-    df = self.performance_data.copy()
-
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-      x=df['datetime'],
-      y=df['equity_value'],
-      mode='lines',
-      name='Equity Curve',
-      line=dict(color='blue')
-    ))
+
+    for strategy_name, data in self.performance_data.items():
+      datetime = data['datetimes']
+      equity_values = data['equity_values']
+      fig.add_trace(go.Scatter(
+        x=datetime,
+        y=equity_values,
+        mode='lines',
+        name='Equity Curve',
+        line=dict(color='blue')
+      ))
 
     fig.update_layout(
       title=title,
@@ -106,16 +108,18 @@ class StrategyVisualisation(MarketVisualisation):
     return fig
 
   def plot_daily_returns(self, title="Daily Returns"):
-    df = self.performance_data.copy()
-
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-      x=df['datetime'],
-      y=df['daily_return'],
-      mode='lines',
-      name='Daily Returns',
-      line=dict(color='green')
-    ))
+
+    for strategy_name, data in self.performance_data.items():
+      datetime = data['datetimes']
+      daily_return = data['daily_returns']
+      fig.add_trace(go.Scatter(
+        x=datetime,
+        y=daily_return,
+        mode='lines',
+        name='Daily Returns',
+        line=dict(color='green')
+      ))
 
     fig.update_layout(
       title=title,
