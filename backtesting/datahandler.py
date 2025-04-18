@@ -193,7 +193,7 @@ class RegimeModelData(BaseDataHandler):
 class FinalAlphaModelData(BaseDataHandler):
     def __init__(self, symbol, start_time, end_time, **kwargs):
         super().__init__(symbol, start_time, end_time, **kwargs)
-        self.api_key = "Jpef9rVtVwUCNHwnAPB7jrnNuqm4YOVCWgMnps61zt2mRNCs" # os.getenv("CYBOTRADE_API_KEY") 
+        self.api_key = "" # os.getenv("CYBOTRADE_API_KEY") 
         self.base_url = "https://api.datasource.cybotrade.rs"
         self.headers = {"X-api-key": self.api_key}
 
