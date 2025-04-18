@@ -10,8 +10,8 @@ class Trade:
             quantity : float, # Amount of units traded
             market_entry_type : str, # Direction of the trade (buy/sell)
             stop_loss_price : float, # Stop loss price
-            exit_price : list[float] = [], # Price at which the trade was closed
-            exit_time : list[datetime] = [], # Time at which the trade was closed
+            exit_price : float = None, # Price at which the trade was closed
+            exit_time : datetime = None, # Time at which the trade was closed
             profit : float = 0.0, # Profit target price
             status : TradeStatus = TradeStatus.OPEN, # Status of the trade (open/closed)
     ):
@@ -33,8 +33,8 @@ class Trade:
             f"Quantity: {self.quantity}\n"
             f"Market entry type: {self.market_entry_type}\n"
             f"Stop loss price: {self.stop_loss_price}\n"
-            # f"Exit price: {self.exit_price}\n"
-            # f"Exit time: {self.exit_time}\n"
+            f"Exit price: {self.exit_price}\n"
+            f"Exit time: {self.exit_time}\n"
             f"Profit: {self.profit}\n"
             f"Status: {self.status}\n"
         )

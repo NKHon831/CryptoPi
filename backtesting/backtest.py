@@ -27,6 +27,7 @@ class BackTest:
 
         # Iterate through all historical data rows to backtest
         for datetime, data in df_historicalData.iterrows():
+
             # pending orders execution
             if self.portfolioManager.portfolio.get_pending_orders() :
                 results = self.broker.execute_orders(self.portfolioManager.send_pending_orders(), self.portfolioManager.portfolio.wallet , data, datetime)
@@ -39,10 +40,10 @@ class BackTest:
 
         print("\nBacktest completed.")
 
+        # print("Trade history\n")
+        # for trade in self.portfolioManager.portfolio.get_all_trades():
+        #     print(trade)
+
         # Visualise porfolio stats
         print("\nPortfolio Overview:")
         self.portfolioManager.portfolio.overview()
-
-        print("Trade history\n")
-        for trade in self.portfolioManager.portfolio.get_all_trades():
-            print(trade)

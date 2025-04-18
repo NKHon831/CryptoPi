@@ -29,11 +29,14 @@ class Portfolio:
     def get_equity_value(self, market_price = 0.0):
         return self.wallet + self.holdings * market_price
 
-    def has_open_trades(self):
+    def has_open_trades(self, market_entry_type : MarketEntryType = None):
         long_open_trades = self.open_trades[MarketEntryType.LONG]
         short_open_trades = self.open_trades[MarketEntryType.SHORT]
         
-        return long_open_trades or short_open_trades
+        if market_entry_type :
+            return self.open_trades[market_entry_type]
+        else:
+            return long_open_trades or short_open_trades
 
     # Add one order/trade
     def add_pending_order(self, pending_order : Order):
@@ -74,9 +77,11 @@ class Portfolio:
         return self.closed_trades
     
     def get_all_trades(self):
-        return (self.open_trades[MarketEntryType.LONG] + self.open_trades[MarketEntryType.SHORT] + self.closed_trades)
+        return (self.open_trades[MarketEntryType.LONG] + self.open_trades[MarketEntryType.SHORT] + self.closed_trades)    
 
     def overview(self):
+        print("Wallet: ", self.wallet)
+        print("Holdings: ", self.holdings)
         print('Pending Orders:', len(self.pending_orders))
         print('Cancelled Orders:', len(self.cancelled_orders))
         print('Executed Orders:', len(self.executed_orders))
@@ -84,3 +89,4 @@ class Portfolio:
         print("LONG: ", len(self.open_trades[MarketEntryType.LONG]))
         print("SHORT: ", len(self.open_trades[MarketEntryType.SHORT]))
         print('Closed trades:', len(self.closed_trades))
+
