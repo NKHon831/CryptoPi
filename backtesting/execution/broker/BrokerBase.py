@@ -1,7 +1,6 @@
 from ..execution_success_model import ExecutionSuccessModel
-from backtesting.execution.Trade import Trade
-from backtesting.constants import OrderExecutionStatus
-import random
+from backtesting.constants import OrderStatus, MarketEntryType
+from backtesting.execution.Order import Order
 
 class BrokerBase:
     def __init__(
@@ -12,51 +11,28 @@ class BrokerBase:
         self.trading_fee = trading_fee
         self.execution_success_model = execution_success_model
 
-    def execute_orders(self, orders):
+    def execute_orders(self, orders : list[Order], wallet, market_data, datetime):
         executed_orders = []
         cancelled_orders = []
-        active_trades = []
-        closed_trades = []
-
         for order in orders:
-
-            # Need to define logic to determine whether open or close trade. For now all trades are open trades.
-            result = self.execute_order(order)
-            if (result['status'] == OrderExecutionStatus.OPEN):
-                executed_orders.append(order)
-                active_trades.append(result['trade'])
-
-            elif (result['status'] == OrderExecutionStatus.CLOSED):
-                executed_orders.append(order)
-                closed_trades.append(result['trade'])
-
-            elif (result['status'] == OrderExecutionStatus.FAILED):
-                cancelled_orders.append(order)
+            resultOrder = self.execute_order(order, wallet, market_data, datetime)
+            if (resultOrder.status == OrderStatus.EXECUTED):
+                executed_orders.append(resultOrder)
+            elif (resultOrder.status == OrderStatus.CANCELLED): 
+                cancelled_orders.append(resultOrder)
 
         return {
             'executed_orders': executed_orders,
             'cancelled_orders': cancelled_orders,
-            'active_trades': active_trades,
-            'closed_trades': closed_trades,
         }
 
-    def execute_order(self, order):
-        result = {
-            'status': OrderExecutionStatus.FAILED,
-            'trade': None,
-        }
-
+    def execute_order(self, order : Order, wallet, market_data, datetime):
         if(self.execution_success_model.is_order_executed_successfully()):
-            # Have to implement logic to determine whether is open/close trade. Placeholder logic for now
-            is_open_trade = True if random.random() > 0.5 else False
-            if (is_open_trade):
-                result['status'] = OrderExecutionStatus.OPEN
-                trade = Trade.open_trade(order)
-            else :
-                result['status'] = OrderExecutionStatus.CLOSED
-
-                trade = Trade.close_trade(order)
-            result['trade'] = trade
-
-        return result
-    # Implement order execution logic here
+            order.status = OrderStatus.EXECUTED
+            order.executed_price = market_data['open']['BTC']
+            order.executed_date_time = datetime 
+            
+        else: 
+            order.status = OrderStatus.CANCELLED
+        
+        return order
