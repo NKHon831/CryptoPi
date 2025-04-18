@@ -31,14 +31,7 @@ class BrokerBase:
             order.status = OrderStatus.EXECUTED
             order.executed_price = market_data['open']['BTC']
             order.executed_date_time = datetime 
-
-            updated_wallet = 0.0
-            if(order.market_entry_type is MarketEntryType.LONG):
-                    updated_wallet = wallet - order.executed_price * order.quantity
-            elif(order.market_entry_type is MarketEntryType.SHORT):
-                updated_wallet = wallet + order.executed_price * order.quantity
-            wallet = updated_wallet    
-
+            
         else: 
             order.status = OrderStatus.CANCELLED
         

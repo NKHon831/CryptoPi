@@ -40,10 +40,9 @@ class BackTest:
 
         print("\nBacktest completed.")
 
-        # print("Trade history\n")
-        # for trade in self.portfolioManager.portfolio.get_all_trades():
-        #     print(trade)
-
         # Visualise porfolio stats
         print("\nPortfolio Overview:")
         self.portfolioManager.portfolio.overview()
+
+        
+        
