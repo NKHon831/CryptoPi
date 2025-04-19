@@ -8,6 +8,11 @@ from datetime import datetime, timezone
 import os
 from functools import reduce
 from config import Config
+# from backtesting.cache import L1Cache
+from functools import lru_cache
+import requests
+import requests_cache
+import time
 
 class BaseDataHandler:
     def __init__(self, 
@@ -29,6 +34,8 @@ class BaseDataHandler:
         self.flatten = flatten
         self.window = window
 
+        # self.l1_cache = L1Cache(ttl_seconds=3600)
+
         # Data containers
         self.raw_data: pd.DataFrame = pd.DataFrame()
         self.processed_data: pd.DataFrame = pd.DataFrame()
@@ -40,16 +47,20 @@ class BaseDataHandler:
     def load_from_disc(self, path: str):
         self.raw_data = pd.read_csv(path)
 
+    def _generate_cache_key(self):
+        return (self.window, self.start_time, self.end_time)
+    
+    def _get_cache_key(self):
+        return f"{self.symbol}_{self.window}_{self.start_time}_{self.end_time}"
+
     def fetch_binance_data(self):
+        requests_cache.install_cache('api_cache', expire_after=3600)
         config = Config()
         api_key = config.CYBOTRADE_API_KEY
         url = "https://api.datasource.cybotrade.rs/binance-linear/candle"
         headers = {"X-api-key": api_key}
 
-        if self.window == "24h":
-            window = "1d"
-        else :
-            window = self.window
+        window = "1d" if self.window == "24h" else self.window
 
         params = {
             "symbol": "BTCUSDT",
@@ -58,10 +69,23 @@ class BaseDataHandler:
             "end_time": self.end_time ,
         }
 
+        # Check if the request is already cached
         try:
-            print(f"📡 Fetching: OHLC from Binance")
-            response = requests.get(url, headers=headers, params=params)
+            # Fetching data from the API
+            session = requests_cache.CachedSession('api_cache', expire_after=3600)
+            start=time.time()
+            response = session.get(url, headers=headers, params=params)
+            print(f"⏱️ Duration: {time.time() - start:.4f}s")
+            
+            # Check if the data was fetched from the cache
+            if response.from_cache:
+                print("✅ Data fetched from cache!")
+            else:
+                print("📡 Data fetched from API!")
+
+            # Check for errors in the response
             response.raise_for_status()
+
             data = response.json()
 
             if 'data' not in data or not data['data']:
@@ -69,7 +93,6 @@ class BaseDataHandler:
                 return pd.DataFrame()
 
             df = pd.json_normalize(data['data'])
-            # df.columns = [f"{endpoint}_{col}" for col in df.columns]
 
             # Ensure required columns are present
             expected_cols = ["start_time", "close", "high", "low", "open", "volume", ]
@@ -82,11 +105,9 @@ class BaseDataHandler:
             df = df.rename(columns={"start_time": "timestamp"})
             df.set_index("timestamp", inplace=True)
 
-            # Store results
             self.raw_data = df
             self.processed_data = df
 
-            print("✅ Binance candle data fetched and processed.")
             return df
 
         except requests.exceptions.RequestException as e:
@@ -126,7 +147,7 @@ class RegimeModelData(BaseDataHandler):
                  flatten: bool = True,):
         super().__init__(symbol, start_time, end_time, window, limit, flatten)
         # Automatically fetch the OHLC data when RegimeModelData is initialized
-        self.fetch_binance_data()
+        # self.fetch_binance_data()
 
     def preprocess(self):
         df = self.raw_data
@@ -403,19 +424,28 @@ class BenchmarkData:
         return btc
 
 # # OHLC only
-# ohlc = BaseDataHandler(symbol='BTC-USD',
-#                       start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
-#                       end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
-#                       window="1h")
-# raw_ohlc = ohlc.raw_data
+ohlc = BaseDataHandler(symbol='BTC-USD',
+                      start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
+                      end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
+                      window="1h")
+raw_ohlc = ohlc.raw_data
 # ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
-# print(raw_ohlc.tail)
+print(raw_ohlc.tail)
 
-# # # # Regime Model Data Frame
+
+ohlc = BaseDataHandler(symbol='BTC-USD',
+                      start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
+                      end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
+                      window="1h")
+raw_ohlc = ohlc.raw_data
+# ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
+print(raw_ohlc.tail)
+
+# Regime Model Data Frame
 # regime_model = RegimeModelData(symbol='BTC-USD',
-#                           start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
-#                           end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
-#                           window="1h")
+#                         start_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
+#                         end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
+#                         window="1h")
 # regime_model.preprocess()
 # regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
 # print(regime_model.processed_data.tail())
@@ -431,13 +461,13 @@ class BenchmarkData:
 # print(df.head())
 
 # Benchmark Data
-benchmark = BenchmarkData(
-    symbol='BTC-USD',
-    start_time=datetime(2024, 3, 1),
-    end_time=datetime(2024, 4, 1),
-    interval='60m'
-)
-btc_data = benchmark.fetch_yfinance_data()
+# benchmark = BenchmarkData(
+#     symbol='BTC-USD',
+#     start_time=datetime(2024, 3, 1),
+#     end_time=datetime(2024, 4, 1),
+#     interval='60m'
+# )
+# btc_data = benchmark.fetch_yfinance_data()
 
 '''
 Base Data & Regime Model Interval
