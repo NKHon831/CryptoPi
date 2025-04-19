@@ -6,7 +6,7 @@ To create an instance of the class:
 
 ```python
 from backtesting.performance.performance_manager import PerformanceManager
-performanceManager = PerformanceManager(trades=trades, initial_capital=100, benchmark_curve=None)
+performanceManager = PerformanceManager(trades=trades, initial_capital=100)
 ```
 
 ### Parameters
@@ -15,7 +15,6 @@ performanceManager = PerformanceManager(trades=trades, initial_capital=100, benc
 | --------------- | ---------- | --------------------------------------------------------------------------------- |
 | trades          | List(Dict) | A list of executed trade records, each being a dictionary with trade information. |
 | initial_capital | float      | The starting capital of the portfolio                                             |
-| benchmark_curve | optional   | Time-series data used for benchmarking performance                                |
 
 ### Methods
 
@@ -108,7 +107,7 @@ The TradeMetrics submodule is responsible for analyzing trade-level statistics, 
 
 `calculate_all()` calculates and returns all above metrics.
 
-### 4. ComparativeMetrics
+<!-- ### 4. ComparativeMetrics
 
 #### Metrics
 
@@ -120,4 +119,4 @@ The TradeMetrics submodule is responsible for analyzing trade-level statistics, 
 
 #### Methods
 
-`calculate_all()` calculates and returns all above metrics.
+`calculate_all()` calculates and returns all above metrics. -->
