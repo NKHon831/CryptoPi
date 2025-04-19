@@ -33,43 +33,40 @@ class AlphaLogisticRegression():
 
         return df
     
-    # def split_data(
-    #     self,
-    #     X: pd.DataFrame,
-    #     y: pd.DataFrame,
-    #     date_col: str = "timestamp",
-    #     cutoff_date: str | pd.Timestamp = None
-    # ) -> tuple:
+    def split_data(
+        self,
+        X: pd.DataFrame,
+        y: pd.DataFrame,
+        train_start_date: str | pd.Timestamp = "2020-01-01",  # Start of training period
+        train_end_date: str | pd.Timestamp = "2021-12-31",  # End of training period (for backtesting)
+        test_start_date: str | pd.Timestamp = "2022-01-01",  # Start of testing period (for forward testing)
+        test_end_date: str | pd.Timestamp = "2022-12-31"  # End of testing period
+    ) -> tuple:
         
-    #     X = X.drop(columns=["timestamp"], errors="ignore")  # Avoid duplication
-    #     X[date_col] = X.index  # Assuming the index is the date column
+        # Ensure the index is a datetime type for X
+        X.index = pd.to_datetime(X.index)
+        
+        # If y does not have a timestamp index, align y to X's index
+        y.index = X.index  # Align y with the X index
+        
+        # Sort the data by index (timestamp)
+        X = X.sort_index()
+        y = y.sort_index()  # Sort y to align with X
+        
+        # Apply the date filters for train and test data
+        train_mask = (X.index >= pd.to_datetime(train_start_date)) & (X.index <= pd.to_datetime(train_end_date))
+        test_mask = (X.index >= pd.to_datetime(test_start_date)) & (X.index <= pd.to_datetime(test_end_date))
 
-    #     # Ensure timestamp column is datetime
-    #     X[date_col] = pd.to_datetime(X[date_col])
+        # Split the data based on the masks
+        X_train, X_test = X[train_mask], X[test_mask]
+        y_train, y_test = y[train_mask], y[test_mask]
 
-    #     # Sort X by date and align y
-    #     X = X.sort_values(by=date_col)
-    #     y = y.loc[X.index]  # ensure alignment
-
-    #     # Use provided cutoff_date or default to 1 year before the max date
-    #     if cutoff_date is None:
-    #         cutoff_date = X[date_col].max() - pd.DateOffset(years=1)
-    #     else:
-    #         cutoff_date = pd.to_datetime(cutoff_date)
-
-    #     # Split based on cutoff
-    #     train_idx = X[date_col] < cutoff_date
-    #     test_idx = X[date_col] >= cutoff_date
-
-    #     X_train, X_test = X.loc[train_idx], X.loc[test_idx]
-    #     y_train, y_test = y.loc[train_idx], y.loc[test_idx]
-
-    #     return X_train, X_test, y_train, y_test
+        return X_train, X_test, y_train, y_test
 
     def train_test_split(self, df: pd.DataFrame, labels: pd.DataFrame) -> tuple:
         return train_test_split(df, labels, test_size=0.2, random_state=42, shuffle=False)
 
-    # Preprocessing logic
+    # Preprocessing logic 
     def preprocess(self, df: pd.DataFrame) -> pd.DataFrame:
 
         # Calculate the log returns
@@ -145,7 +142,13 @@ class AlphaLogisticRegression():
     def evaluate(self, X:pd.DataFrame, y:pd.DataFrame):
 
         y_pred = self.model.predict(X)
+        
         print("Accuracy: ", accuracy_score(y, y_pred))
+
+        return pd.DataFrame({
+            "date": X.index,
+            "predictions": y_pred
+        })
 
     def plot_confusion_matrix(self, y_true: pd.Series, y_pred: pd.Series) -> None:
         """
@@ -168,26 +171,37 @@ def main():
     df = LR.load_data()
     df = LR.preprocess(df)
     labels= LR.generate_label(df)
-    X_train, X_test, y_train, y_test = LR.train_test_split(df, labels)
+    X_train, X_test, y_train, y_test = LR.split_data(df, labels)
 
     # Feature Selection
     X_train, _ = LR.feature_selection(X_train, y_train)
     X_train_scaled = LR.scaler.fit_transform(X_train)
+    X_train_scaled = pd.DataFrame(X_train_scaled, index=X_train.index)
 
     
     # Transform the testing data using the same preprocessing logic with the training data
     X_test = X_test[X_train.columns]
     X_test_scaled = LR.scaler.transform(X_test)
+    X_test_scaled = pd.DataFrame(X_test_scaled, index=X_test.index)
 
     # Train the model (Backward Testing)
     LR.train(X_train_scaled, y_train)
 
-    LR.evaluate(X_train_scaled, y_train)
+    df_backtest = LR.evaluate(X_train_scaled, y_train)
 
-    
     # Forward Testing
     y_pred = LR.predict(X_test_scaled)
+    df_forwardtest = pd.DataFrame({
+        "date": X_test.index,
+        "predictions": y_pred
+    })
     LR.plot_confusion_matrix(y_test, y_pred.astype(int))
+
+    df_backtest.to_csv("../../data/dbacktest_predictions.csv", index=False)
+    df_forwardtest.to_csv("../../data/forwardtest_predictions.csv", index=False)
+
+    return df_backtest, df_forwardtest
+
 
 if __name__ == "__main__":
     main()
