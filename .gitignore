@@ -17,3 +17,7 @@ __pycache__/
 
 # Ignore exports folder
 exports/
+
+# Ignore cache files
+cache/
+api_cache.sqlite
