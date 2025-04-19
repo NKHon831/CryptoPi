@@ -50,8 +50,9 @@ class BaseDataHandler:
     def convert_to_unix_ms(self, dt: datetime) -> int:
         return int(dt.timestamp() * 1000)
 
+    @staticmethod
     def load_from_disc(self, path: str):
-        self.raw_data = pd.read_csv(path)
+        return pd.read_csv(path)
 
     def _generate_cache_key(self):
         return (self.window, self.start_time, self.end_time)
@@ -162,7 +163,7 @@ class RegimeModelData(BaseDataHandler):
         start_timer = time.time()
         if os.path.exists(cache_file):
             print("📥 Loaded processed regime data from cache.")
-            clean_old_cache(cache_dir="cache/processed", max_age_seconds=60*60*24)
+            clean_old_cache(cache_dir="cache/processed", max_age_seconds=3600)
             self.processed_data = joblib.load(cache_file)
         else:
             # self.fetch_binance_data()
@@ -294,7 +295,7 @@ class RegimeModelData(BaseDataHandler):
         direction = np.sign(df["close"].diff()).fillna(0)
         return (direction * df["volume"]).cumsum()
 
-class FinalAlphaModelData(BaseDataHandler):
+class LogisticRegressionModelData(BaseDataHandler):
     def __init__(
             self, 
             symbol: str, 
@@ -319,54 +320,54 @@ class FinalAlphaModelData(BaseDataHandler):
         # Endpoint-specific configuration
         self.endpoint_config = {
             "glassnode/addresses/min_10k_count": {}, # add_10_k
-            # "glassnode/addresses/min_100_count": {}, # add_100_btc
-            # "glassnode/addresses/new_non_zero_count": {}, # new_adds
+            "glassnode/addresses/min_100_count": {}, # add_100_btc
+            "glassnode/addresses/new_non_zero_count": {}, # new_adds
             "glassnode/addresses/accumulation_count": {}, # new_adds
             "glassnode/addresses/count": {}, # total_adds
-            # "glassnode/supply/active_more_1y_percent": {}, # s_last_act_1y
-            # "glassnode/blockchain/block_count": {}, # blocks_mined
-            # "glassnode/mining/hash_rate_mean": {}, # hash_rate
-            # "glassnode/supply/inflation_rate": {}, # inflat_rate
-            # "glassnode/mining/revenue_from_fees": {}, # min_rev_fees
-            # "glassnode/distribution/balance_exchanges": {}, # ex_balance
-            # "glassnode/distribution/balance_exchanges": {"a": "USDT"}, # ex_balance_usdt
-            # "glassnode/transactions/transfers_to_exchanges_count_pit": {}, # ex_deposits
-            # "glassnode/transactions/transfers_volume_to_exchanges_sum": {}, # ex_inflow_vol
-            # # ex_inflow_total
-            # # "glassnode/distribution/exchange_net_position_change_pit": {"i": "24h"}, (Only allow window=24h) # net_pos_chan
-            # # "glassnode/distribution/exchange_net_position_change_pit": {"i": "24h", "a": "USDT"}, (Only allow window=24h) # net_pos_usdt 
-            # "glassnode/transactions/transfers_volume_exchanges_net_pit": {}, # netflow_vol
-            # # "glassnode/transactions/transfers_volume_exchanges_net_pit": {"a": "USDT"}, # netflow_vol_usdt
-            # "glassnode/transactions/transfers_volume_from_exchanges_mean_pit": {}, # outflow_mean
-            # "glassnode/transactions/transfers_volume_from_exchanges_sum_pit": {}, # outflow_total
-            # "glassnode/transactions/transfers_from_exchanges_count_pit": {}, # withdrawals
-            # "glassnode/indicators/net_realized_profit_loss": {}, # profit_loss
-            # "glassnode/indicators/net_unrealized_profit_loss": {}, # nupl
-            # # utx_profit
-            # "glassnode/indicators/realized_loss": {}, # real_loss
-            # # p_l_ration
-            # "glassnode/indicators/realized_profit": {}, # real_profit
-            # "glassnode/indicators/sopr": {}, # sopr
-            # "glassnode/supply/loss_sum": {}, # supply_loss
-            # # "glassnode/indicators/difficulty_ribbon": {"i": "24h"}, (Only allows window=24h) # dif_ribbon
-            # # ent_adj_count
-            # "glassnode/transactions/transfers_volume_entity_adjusted_sum_pit": {}, # ent_vol_total
-            # "glassnode/transactions/transfers_volume_within_exchanges_sum_pit": {}, # in_house_vol
-            # "glassnode/transactions/transfers_volume_between_exchanges_sum_pit": {}, # inter_ex
-            # "glassnode/indicators/liveliness": {}, # liveliness
-            # "glassnode/indicators/nvt": {}, # nvt_ratio
-            # "glassnode/indicators/nvts": {}, # nvts_signal
-            # "glassnode/indicators/reserve_risk": {}, # reserve_risk
-            # "glassnode/indicators/rhodl_ratio": {}, # rhodl_ratio
-            # "glassnode/indicators/seller_exhaustion_constant": {}, # seller_exhaustion
-            # "glassnode/indicators/stock_to_flow_deflection": {}, # s_flow_def1
-            # # "glassnode/transactions/transfers_count": {}, # Not sure why does not support BTC # tra_count
-            # "glassnode/blockchain/utxo_created_count": {}, # utx_created
-            # "glassnode/indicators/velocity": {}, # velocity
+            "glassnode/supply/active_more_1y_percent": {}, # s_last_act_1y
+            "glassnode/blockchain/block_count": {}, # blocks_mined
+            "glassnode/mining/hash_rate_mean": {}, # hash_rate
+            "glassnode/supply/inflation_rate": {}, # inflat_rate
+            "glassnode/mining/revenue_from_fees": {}, # min_rev_fees
+            "glassnode/distribution/balance_exchanges": {}, # ex_balance
+            "glassnode/distribution/balance_exchanges": {"a": "USDT"}, # ex_balance_usdt
+            "glassnode/transactions/transfers_to_exchanges_count_pit": {}, # ex_deposits
+            "glassnode/transactions/transfers_volume_to_exchanges_sum": {}, # ex_inflow_vol
+            # ex_inflow_total
+            # "glassnode/distribution/exchange_net_position_change_pit": {"i": "24h"}, (Only allow window=24h) # net_pos_chan
+            # "glassnode/distribution/exchange_net_position_change_pit": {"i": "24h", "a": "USDT"}, (Only allow window=24h) # net_pos_usdt 
+            "glassnode/transactions/transfers_volume_exchanges_net_pit": {}, # netflow_vol
+            # "glassnode/transactions/transfers_volume_exchanges_net_pit": {"a": "USDT"}, # netflow_vol_usdt
+            "glassnode/transactions/transfers_volume_from_exchanges_mean_pit": {}, # outflow_mean
+            "glassnode/transactions/transfers_volume_from_exchanges_sum_pit": {}, # outflow_total
+            "glassnode/transactions/transfers_from_exchanges_count_pit": {}, # withdrawals
+            "glassnode/indicators/net_realized_profit_loss": {}, # profit_loss
+            "glassnode/indicators/net_unrealized_profit_loss": {}, # nupl
+            # utx_profit
+            "glassnode/indicators/realized_loss": {}, # real_loss
+            # p_l_ration
+            "glassnode/indicators/realized_profit": {}, # real_profit
+            "glassnode/indicators/sopr": {}, # sopr
+            "glassnode/supply/loss_sum": {}, # supply_loss
+            # "glassnode/indicators/difficulty_ribbon": {"i": "24h"}, (Only allows window=24h) # dif_ribbon
+            # ent_adj_count
+            "glassnode/transactions/transfers_volume_entity_adjusted_sum_pit": {}, # ent_vol_total
+            "glassnode/transactions/transfers_volume_within_exchanges_sum_pit": {}, # in_house_vol
+            "glassnode/transactions/transfers_volume_between_exchanges_sum_pit": {}, # inter_ex
+            "glassnode/indicators/liveliness": {}, # liveliness
+            "glassnode/indicators/nvt": {}, # nvt_ratio
+            "glassnode/indicators/nvts": {}, # nvts_signal
+            "glassnode/indicators/reserve_risk": {}, # reserve_risk
+            "glassnode/indicators/rhodl_ratio": {}, # rhodl_ratio
+            "glassnode/indicators/seller_exhaustion_constant": {}, # seller_exhaustion
+            "glassnode/indicators/stock_to_flow_deflection": {}, # s_flow_def1
+            # "glassnode/transactions/transfers_count": {}, # Not sure why does not support BTC # tra_count
+            "glassnode/blockchain/utxo_created_count": {}, # utx_created
+            "glassnode/indicators/velocity": {}, # velocity
         }
 
     def fetch_all_endpoints(self):
-        clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=60 * 60 * 24)  # e.g., delete after 24 hours
+        clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=3600)  # e.g., delete after 24 hours
         all_data = {}
         headers = {
             "X-Api-Key": self.api_key
@@ -470,7 +471,7 @@ class BenchmarkData:
         print(btc.head())
         return btc
     
-def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=60 * 60 * 24):
+def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=3600):
     """
     Deletes cache files older than max_age_seconds from the specified cache directory.
     """
@@ -488,7 +489,7 @@ def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=60 * 60 * 24):
                 print(f"Deleting old cache file: {file_path}")
                 os.remove(file_path)
 
-# # OHLC only
+# OHLC only
 # ohlc = BaseDataHandler(symbol='BTC-USD',
 #                       start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
 #                       end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
@@ -497,7 +498,7 @@ def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=60 * 60 * 24):
 # # ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
 # print(raw_ohlc.tail)
 
-# Regime Model Data Frame
+# # Regime Model Data Frame
 # regime_model = RegimeModelData(symbol='BTC-USD',
 #                         start_time=datetime(2024, 3, 1, tzinfo=timezone.utc),
 #                         end_time=datetime(2025, 4, 13, tzinfo=timezone.utc),
@@ -515,7 +516,7 @@ df = model.fetch_all_endpoints()
 model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
 print(df.head())
 
-# Benchmark Data
+# # Benchmark Data
 # benchmark = BenchmarkData(
 #     symbol='BTC-USD',
 #     start_time=datetime(2024, 3, 1),
@@ -524,6 +525,8 @@ print(df.head())
 # )
 # btc_data = benchmark.fetch_yfinance_data()
 
+data=BaseDataHandler.load_from_disc("/Users/pohsharon/Downloads/UMH/ohlc.csv")
+print(data.tail())
 '''
 Base Data & Regime Model Interval
 1m 3m 5m 10m 15m 30m 1h 2h 4h 6h 12h 1d 3d 1w 1M
