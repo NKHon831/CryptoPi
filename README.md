@@ -1,4 +1,12 @@
-## UM Hackathon 2025 Preliminary Round: 6thSense
+## UM Hackathon 2025 Final Round: 6thSense
+
+### Submission:
+
+#### Presentation Slides:
+
+- [Canva](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7)
+
+<!-- ## UM Hackathon 2025 Preliminary Round: 6thSense
 
 ### Submission:
 
@@ -9,7 +17,7 @@
 
 #### Presentation Slides:
 
-- [Canva](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7)
+- [Canva](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7) -->
 
 <img src="assets/cryptopi_logo.png" alt="CryptoPi Logo" width="100"/>
 
