@@ -115,20 +115,20 @@ class PortfolioManager:
         trade_to_close.exit_price = executed_order.executed_price
 
     def calculate_quantity_to_trade(self, trading_signal : Signal, current_market_data):
-        quantity_to_trade = 0.0
-        current_market_price = current_market_data['close']['BTC']
-        current_portfolio_equity_value = self.portfolio.get_equity_value(current_market_price)
+        # quantity_to_trade = 0.0
+        # current_market_price = current_market_data['close']
+        # current_portfolio_equity_value = self.portfolio.get_equity_value(current_market_price)
 
-        if(trading_signal is Signal.BUY):
-            quantity_to_trade = self.portfolio.investment_rate * current_portfolio_equity_value / current_market_price
+        # if(trading_signal is Signal.BUY):
+        #     quantity_to_trade = self.portfolio.investment_rate * current_portfolio_equity_value / current_market_price
 
-        # Implement a more detailed short logic with borrow fee
-        elif(trading_signal is Signal.SELL):
-            quantity_to_trade = self.portfolio.investment_rate * current_portfolio_equity_value / current_market_price
+        # # Implement a more detailed short logic with borrow fee
+        # elif(trading_signal is Signal.SELL):
+        #     quantity_to_trade = self.portfolio.investment_rate * current_portfolio_equity_value / current_market_price
 
 
-        return quantity_to_trade
-        # return 1
+        # return quantity_to_trade
+        return 1 
 
 
 

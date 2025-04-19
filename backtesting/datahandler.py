@@ -40,7 +40,7 @@ class BaseDataHandler:
         self.raw_data = pd.read_csv(path)
 
     def fetch_binance_data(self):
-        config = Config("backtesting/.env")
+        config = Config()
         api_key = config.CYBOTRADE_API_KEY
         url = "https://api.datasource.cybotrade.rs/binance-linear/candle"
         headers = {"X-api-key": api_key}
@@ -58,13 +58,13 @@ class BaseDataHandler:
         }
 
         try:
-            print(f"📡 Fetching: OHLC from Binance")
+            # print(f"📡 Fetching: OHLC from Binance")
             response = requests.get(url, headers=headers, params=params)
             response.raise_for_status()
             data = response.json()
 
             if 'data' not in data or not data['data']:
-                print("⚠️ No 'data' returned in response.")
+                # print("⚠️ No 'data' returned in response.")
                 return pd.DataFrame()
 
             df = pd.json_normalize(data['data'])
@@ -74,7 +74,8 @@ class BaseDataHandler:
             expected_cols = ["start_time", "close", "high", "low", "open", "volume", ]
             missing_cols = [col for col in expected_cols if col not in df.columns]
             if missing_cols:
-                print(f"⚠️ Missing columns: {missing_cols}")
+                pass
+                # print(f"⚠️ Missing columns: {missing_cols}")
 
             # Convert timestamp
             df["start_time"] = pd.to_datetime(df["start_time"], unit="ms", utc=True)
@@ -85,7 +86,7 @@ class BaseDataHandler:
             self.raw_data = df
             self.processed_data = df
 
-            print("✅ Binance candle data fetched and processed.")
+            # print("✅ Binance candle data fetched and processed.")
             return df
 
         except requests.exceptions.RequestException as e:
@@ -111,7 +112,7 @@ class BaseDataHandler:
 
         try:
             self.processed_data.to_csv(full_path)
-            print(f"✅ Data exported to: {full_path}")
+            # print(f"✅ Data exported to: {full_path}")
         except Exception as e:
             print(f"❌ Failed to export data: {e}")
 
@@ -255,7 +256,7 @@ class FinalAlphaModelData(BaseDataHandler):
             end_time: datetime, 
             **kwargs):
         super().__init__(symbol, start_time, end_time, **kwargs)
-        config = Config("backtesting/.env")
+        config = Config()
         self.api_key = config.CYBOTRADE_API_KEY
         self.base_url = "https://api.datasource.cybotrade.rs"
         self.headers = {"X-api-key": self.api_key}
@@ -327,7 +328,7 @@ class FinalAlphaModelData(BaseDataHandler):
 
         # Fetch data from each endpoint
         for endpoint, custom_params in self.endpoint_config.items():
-            print(f"Fetching: /{endpoint}")
+            # print(f"Fetching: /{endpoint}")
             url = f"{self.base_url}/{endpoint}"
             params = self.common_params.copy()
 
@@ -372,7 +373,7 @@ class FinalAlphaModelData(BaseDataHandler):
         # Convert timestamp to datetime
         if "timestamp" in self.processed_data.columns:
             self.processed_data["timestamp"] = pd.to_datetime(self.processed_data["timestamp"], unit="ms", utc=True)
-            print("✅ Timestamp column converted to datetime.")
+            # print("✅ Timestamp column converted to datetime.")
         else:
             print("⚠️ 'timestamp' column not found in processed_data.")
 
@@ -386,8 +387,8 @@ ohlc = BaseDataHandler(symbol='BTC-USD',
                       end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
                       window="1h")
 raw_ohlc = ohlc.raw_data
-ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
-print(raw_ohlc.tail)
+# ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
+# print(raw_ohlc.tail)
 
 # # # Regime Model Data Frame
 regime_model = RegimeModelData(symbol='BTC-USD',
@@ -396,7 +397,7 @@ regime_model = RegimeModelData(symbol='BTC-USD',
                           window="1h")
 regime_model.preprocess()
 regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
-print(regime_model.processed_data.tail())
+# print(regime_model.processed_data.tail())
 
 # Test the FinalAlphaModel class
 model = FinalAlphaModelData(symbol='BTC',
@@ -405,8 +406,8 @@ model = FinalAlphaModelData(symbol='BTC',
                           window="1h")
 
 df = model.fetch_all_endpoints()
-model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
-print(df.head())
+# model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
+# print(df.head())
 
 # 1m 3m 5m 10m 15m 30m 1h 2h 4h 6h 12h 1d 3d 1w 1M -> intervals for olhc -> BaseDataHandler & RegimeModelData
 # 1h 24h -> intervals for glassnode -> FinalAlphaModelData

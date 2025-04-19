@@ -23,20 +23,20 @@ class BackTest:
 
     def run(self):
         print("\nRunning backtest...")
-        df_historicalData = self.dataHandler.get_data()
+        df_historicalData = self.dataHandler.get_processed_data()
 
         # Iterate through all historical data rows to backtest
         for datetime, data in df_historicalData.iterrows():
-
-            # pending orders execution
-            if self.portfolioManager.portfolio.get_pending_orders() :
-                results = self.broker.execute_orders(self.portfolioManager.send_pending_orders(), self.portfolioManager.portfolio.wallet , data, datetime)
-                self.portfolioManager.update_orders(results)
 
             # Trading signal generation and Order creation for current row
             trading_signal = self.strategy.generate_trading_signal(data, datetime)
             if trading_signal in Signal.TRADING_SIGNALS:
                 self.portfolioManager.generate_order(trading_signal, data)
+
+            # pending orders execution
+            if self.portfolioManager.portfolio.get_pending_orders() :
+                results = self.broker.execute_orders(self.portfolioManager.send_pending_orders(), self.portfolioManager.portfolio.wallet , data, datetime)
+                self.portfolioManager.update_orders(results)
 
         print("\nBacktest completed.")
 
