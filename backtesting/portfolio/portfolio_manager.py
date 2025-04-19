@@ -17,11 +17,11 @@ class PortfolioManager:
         self.portfolio.pending_orders.clear()
         return pending_orders
     
-    def generate_order(self, trading_signal : Signal, current_market_data):
+    def generate_order(self, symbol ,trading_signal : Signal, current_market_data):
         quantity_to_trade = self.calculate_quantity_to_trade(trading_signal, current_market_data)
 
         # No price_limit, stop_loss price, desired_price logic
-        new_order = Order(trading_signal, quantity_to_trade)
+        new_order = Order(symbol, trading_signal, quantity_to_trade)
         self.portfolio.add_pending_order(new_order)
 
     def update_orders(self, orders):
@@ -129,6 +129,20 @@ class PortfolioManager:
 
         # return quantity_to_trade
         return 1 
+    
+    def export_closed_trades(self):
+        closed_trades = [{
+            'symbol': trade.symbol,
+            'entry_time': trade.entry_time,
+            'exit_time': trade.exit_time,
+            'entry_price': trade.entry_price,
+            'exit_price': trade.exit_price,
+            'quantity': trade.quantity,
+            'direction': trade.market_entry_type,
+        } for trade in self.portfolio.get_closed_trades()]
+
+        return closed_trades
+
 
 
 

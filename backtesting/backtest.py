@@ -31,7 +31,7 @@ class BackTest:
             # Trading signal generation and Order creation for current row
             trading_signal = self.strategy.generate_trading_signal(data, datetime)
             if trading_signal in Signal.TRADING_SIGNALS:
-                self.portfolioManager.generate_order(trading_signal, data)
+                self.portfolioManager.generate_order(self.dataHandler.symbol, trading_signal, data)
 
             # pending orders execution
             if self.portfolioManager.portfolio.get_pending_orders() :
@@ -43,6 +43,8 @@ class BackTest:
         # Visualise porfolio stats
         print("\nPortfolio Overview:")
         self.portfolioManager.portfolio.overview()
+
+        print("Export data: ", self.portfolioManager.export_closed_trades())
 
         
         
