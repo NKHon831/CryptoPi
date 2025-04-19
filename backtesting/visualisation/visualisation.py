@@ -33,6 +33,9 @@ class MarketVisualisation:
     return fig
   
 class StrategyVisualisation(MarketVisualisation):
+
+  market_data_with_trading_signal = None
+
   def __init__(self, performance_data, performance_metrics, market_data=None):
     self.market_data = None
     self.performance_data = performance_data
@@ -254,3 +257,7 @@ class StrategyVisualisation(MarketVisualisation):
     self.market_data = market_data
     super().__init__(market_data)
     self.chart_mapping["Price Chart"] = self.plot_price_chart
+
+  @staticmethod
+  def import_market_data_with_trading_signal(market_data_with_trading_signal):
+    StrategyVisualisation.market_data_with_trading_signal = market_data_with_trading_signal

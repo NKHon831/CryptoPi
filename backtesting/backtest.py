@@ -6,6 +6,8 @@ from backtesting.execution.Order import Order
 from backtesting.execution.broker.brokers.DefaultBroker import DefaultBroker
 from backtesting.execution.broker.BrokerBase import BrokerBase
 from backtesting.portfolio.portfolio_manager import PortfolioManager
+from backtesting.performance.performance_base import PerformanceBase
+from backtesting.visualisation.visualisation import StrategyVisualisation
 
 class BackTest:
     def __init__(
@@ -13,6 +15,7 @@ class BackTest:
         dataHandler : BaseDataHandler, 
         strategy : StrategyBase, 
         # portfolio : Portfolio = Portfolio(),
+        performance : PerformanceBase = PerformanceBase(),
         portfolioManager : PortfolioManager = PortfolioManager(),
         broker : BrokerBase = DefaultBroker()
     ):
@@ -20,16 +23,20 @@ class BackTest:
         self.strategy = strategy 
         self.portfolioManager = portfolioManager   
         self.broker = broker
+        self.performance = performance
 
     def run(self):
         print("\nRunning backtest...")
         df_historicalData = self.dataHandler.get_processed_data()
+        df_historicalData['trading_signal'] = None 
 
         # Iterate through all historical data rows to backtest
         for datetime, data in df_historicalData.iterrows():
 
             # Trading signal generation and Order creation for current row
             trading_signal = self.strategy.generate_trading_signal(data, datetime)
+            df_historicalData.loc[datetime, 'trading_signal'] = Signal.map_to_binary(trading_signal)
+
             if trading_signal in Signal.TRADING_SIGNALS:
                 self.portfolioManager.generate_order(self.dataHandler.symbol, trading_signal, data)
 
@@ -40,11 +47,15 @@ class BackTest:
 
         print("\nBacktest completed.")
 
+        # Pass closed_trades to performance
+        self.performance.import_closed_trades(self.portfolioManager.export_closed_trades)
+
+        # Pass market data with signal for visualisation
+        StrategyVisualisation.import_market_data_with_trading_signal(self.dataHandler.get_processed_data())
+
         # Visualise porfolio stats
         print("\nPortfolio Overview:")
         self.portfolioManager.portfolio.overview()
-
-        print("Export data: ", self.portfolioManager.export_closed_trades())
-
         
+            
         
