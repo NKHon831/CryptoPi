@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 from market_regime_hmm import MarketRegimeHMM  # Ensure this imports your class correctly
-from config import INPUT_CSV_PATH, OUTPUT_CSV_PATH, OUTPUT_JPG_PATH, N_HMM_STATES, HMM_FEATURES, MODEL_PATH_PREFIX
+from config import INPUT_CSV_PATH, OUTPUT_CSV_PATH, N_HMM_STATES, HMM_FEATURES, MODEL_PATH_PREFIX
 import matplotlib.pyplot as plt
 
 def main():
