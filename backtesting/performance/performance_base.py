@@ -1,10 +1,11 @@
 class PerformanceBase:
-  def __init__(self, trades, initial_capital, fee_rate=0.06):
+  def __init__(self, trades = None, initial_capital = None, fee_rate=0.06):
     self.trades = trades
     self.initial_capital = initial_capital
     # excluded because already included in portfolio module
     self.append_fee(fee_rate)
     self.append_pnl()
+    self.closed_trades = None
     print(self.trades)
     print()
 
@@ -45,3 +46,6 @@ class PerformanceBase:
       
       pnl = raw_pnl - fee
       trade["pnl"] = pnl
+
+  def import_closed_trades(self, closed_trades):
+    self.closed_trades = closed_trades
