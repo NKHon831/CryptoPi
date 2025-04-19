@@ -1,10 +1,11 @@
 import plotly.graph_objects as go
 import pandas as pd
 import os
+from backtesting.visualisation.tools import match_portfolio_market_data
 
 class MarketVisualisation:
   def __init__(self, market_data):
-    self.market_data = market_data
+    self.market_data = match_portfolio_market_data(market_data)
     self.charts = {}
 
   def plot_price_chart(self, title='BTC-USD Price Chart'):
@@ -33,9 +34,6 @@ class MarketVisualisation:
     return fig
   
 class StrategyVisualisation(MarketVisualisation):
-
-  market_data_with_trading_signal = None
-
   def __init__(self, performance_data, performance_metrics, market_data=None):
     self.market_data = None
     self.performance_data = performance_data
@@ -48,7 +46,7 @@ class StrategyVisualisation(MarketVisualisation):
     }
     self.charts = {}
     if market_data is not None:
-      self.market_data = market_data
+      self.market_data = match_portfolio_market_data(market_data)
       super().__init__(market_data)
       self.chart_mapping["Price Chart"] = self.plot_price_chart
   
@@ -254,10 +252,6 @@ class StrategyVisualisation(MarketVisualisation):
       print("Market data already loaded. Reloading is not supported.")
       return
     
-    self.market_data = market_data
+    self.market_data = match_portfolio_market_data(market_data)
     super().__init__(market_data)
     self.chart_mapping["Price Chart"] = self.plot_price_chart
-
-  @staticmethod
-  def import_market_data_with_trading_signal(market_data_with_trading_signal):
-    StrategyVisualisation.market_data_with_trading_signal = market_data_with_trading_signal
