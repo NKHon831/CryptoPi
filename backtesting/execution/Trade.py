@@ -5,6 +5,7 @@ from datetime import datetime
 class Trade:
     def __init__(
             self,
+            symbol : str,
             entry_price : float, # Price at which the trade was opened
             entry_time : datetime, # Time at which the trade was opened
             quantity : float, # Amount of units traded
@@ -15,6 +16,7 @@ class Trade:
             profit : float = 0.0, # Profit target price
             status : TradeStatus = TradeStatus.OPEN, # Status of the trade (open/closed)
     ):
+        self.symbol = symbol
         self.entry_price = entry_price
         self.exit_price = exit_price
         self.entry_time = entry_time
@@ -24,6 +26,7 @@ class Trade:
         self.stop_loss_price = stop_loss_price
         self.profit = profit
         self.status = status
+        self.symbol = symbol
     
     def __str__(self):
         return (
@@ -42,6 +45,7 @@ class Trade:
     @staticmethod
     def create(order : Order, quantity : float = None):
         return Trade(
+                    order.symbol,
                     order.executed_price,
                     order.executed_date_time,
                     quantity if quantity is not None else order.quantity,
