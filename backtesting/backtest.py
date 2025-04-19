@@ -8,9 +8,7 @@ from backtesting.execution.broker.BrokerBase import BrokerBase
 from backtesting.portfolio.portfolio_manager import PortfolioManager
 from backtesting.performance.performance_base import PerformanceBase
 from backtesting.performance.performance_manager import PerformanceManager
-from backtesting.visualisation.visualisation import StrategyVisualisation
-from backtesting.visualisation.visualisation import MarketVisualisation
-
+from backtesting.visualisation.visualisation import Visualisation
 class BackTest:
     def __init__(
         self, 
@@ -50,16 +48,10 @@ class BackTest:
         closed_trades = self.portfolioManager.export_closed_trades()
         performance_manager = PerformanceManager(closed_trades, self.portfolioManager.portfolio.initial_capital)
         scalar_metric, time_series_metric = performance_manager.get_metrics()
-        # strategyVisualiser = StrategyVisualisation(time_series_metric, scalar_metric)
-        # charts = strategyVisualiser.plot()
-        # for chart_name, fig in charts.items():
-        #     fig.show()
 
         market_data = self.dataHandler.get_processed_data()
-        # market_visualisation = MarketVisualisation(market_data)
-        # market_visualisation.plot_price_chart().show()
-        strategy_visualiser = StrategyVisualisation(time_series_metric, scalar_metric, market_data)
-        charts = strategy_visualiser.plot()
+        visualiser = Visualisation(time_series_metric, scalar_metric, market_data)
+        charts = visualiser.plot()
         for chart_name, fig in charts.items():
             fig.show()
 
