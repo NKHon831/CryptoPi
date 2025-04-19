@@ -84,10 +84,10 @@ class BaseDataHandler:
             print(f"⏱️ Binance Data Duration: {time.time() - start:.4f}s")
             
             # Check if the data was fetched from the cache
-            if response.from_cache:
-                print("✅ Binance Data fetched from cache!")
-            else:
-                print("📡 Binance Data fetched from API!")
+            # if response.from_cache:
+            #     print("✅ Binance Data fetched from cache!")
+            # else:
+            #     print("📡 Binance Data fetched from API!")
 
             # Check for errors in the response
             
@@ -104,9 +104,9 @@ class BaseDataHandler:
             # Ensure required columns are present
             expected_cols = ["start_time", "close", "high", "low", "open", "volume", ]
             missing_cols = [col for col in expected_cols if col not in df.columns]
-            if missing_cols:
-                pass
-                # print(f"⚠️ Missing columns: {missing_cols}")
+            # if missing_cols:
+            #     pass
+            #     # print(f"⚠️ Missing columns: {missing_cols}")
 
             # Convert timestamp
             df["start_time"] = pd.to_datetime(df["start_time"], unit="ms", utc=True)

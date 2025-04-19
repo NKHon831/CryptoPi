@@ -20,6 +20,6 @@ class Main:
         # momentum_strategy = MomentumStrategy(df_historical_data)
         
         backtest = BackTest(dataHandler, moving_average_crossover_strategy)
-        backtest.run() 
+        backtest.run()
 
         #forward test later

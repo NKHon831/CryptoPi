@@ -52,7 +52,6 @@ class Portfolio:
         self.cancelled_orders.append(cancelled_order)
 
     def add_open_trade(self, trade : Trade):
-        print("Trade: ", trade)
         self.open_trades[trade.market_entry_type].append(trade)
     
     def add_closed_trade(self, closed_trade : Trade):
@@ -78,9 +77,6 @@ class Portfolio:
         return self.open_trades
     
     def get_closed_trades(self):
-        for trade in self.closed_trades:
-            if trade.exit_time is None: 
-                print("Trade: ", trade)
         return self.closed_trades
     
     def get_all_trades(self):

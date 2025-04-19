@@ -16,8 +16,6 @@ class BackTest:
         self, 
         dataHandler : BaseDataHandler, 
         strategy : StrategyBase, 
-        # portfolio : Portfolio = Portfolio(),
-        # performance : PerformanceBase = PerformanceBase(),
         portfolioManager : PortfolioManager = PortfolioManager(),
         broker : BrokerBase = DefaultBroker()
     ):
@@ -98,22 +96,20 @@ class BackTest:
                 
         print("\nBacktest completed.")
 
-        closed_trades = self.portfolioManager.export_closed_trades()
-        performance_manager = PerformanceManager(closed_trades, self.portfolioManager.portfolio.initial_capital)
-        scalar_metric, time_series_metric = performance_manager.get_metrics()
+        # closed_trades = self.portfolioManager.export_closed_trades()
+        # performance_manager = PerformanceManager(closed_trades, self.portfolioManager.portfolio.initial_capital)
+        # scalar_metric, time_series_metric = performance_manager.get_metrics()
 
-        market_data = self.dataHandler.get_processed_data()
-        visualiser = Visualisation(time_series_metric, scalar_metric, market_data)
-        charts = visualiser.plot()
-        for chart_name, fig in charts.items():
-            fig.show()
+        # market_data = self.dataHandler.get_processed_data()
+        # visualiser = Visualisation(time_series_metric, scalar_metric, market_data)
+        # charts = visualiser.plot()
+        # # for chart_name, fig in charts.items():
+        # #     fig.show()
 
         # Visualise porfolio stats
-        # print("\nPortfolio Overview:")
-        # self.portfolioManager.portfolio.overview()
+        print("\nPortfolio Overview:")
+        self.portfolioManager.portfolio.overview()
 
-        # for position in self.portfolioManager.portfolio.positions:
-        #     print(position)
         
             
         

@@ -81,7 +81,7 @@ class PortfolioManager:
                 self.close_a_trade(trade_to_close, executed_order, traded_quantity)
 
                 #  Move the closed trade from open trades to closed trades
-                closed_trade = open_trades.pop()
+                closed_trade = open_trades.pop(0)
                 self.portfolio.add_closed_trade(closed_trade)
 
             elif(traded_quantity == order_quantity_to_close):
