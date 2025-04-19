@@ -1,15 +1,11 @@
-class StrategyBase:
-    def __init__(self):
-        pass
+from datetime import datetime
 
-    def generate_trading_signal(data):
+class StrategyBase:
+    def __init__(self, df_historical_data = None):
+        self.df_historical_data = df_historical_data
+
+    def generate_trading_signal(data, datetime : datetime= None):
         # Allow trader to define their own trading strategy logic
         pass
-
-    def buy(self):
-        #implement buy logic here
-        return 'BUY'
     
-    def sell(self):
-        #implement sell logic here
-        return 'SELL'
+    # 0 -> hold , 1 -> buy , -1 -> sell
