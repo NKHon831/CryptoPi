@@ -48,7 +48,7 @@ class BackTest:
         print("\nBacktest completed.")
 
         # Pass closed_trades to performance
-        self.performance.import_closed_trades(self.portfolioManager.export_closed_trades)
+        PerformanceBase.import_closed_trades(self.portfolioManager.export_closed_trades())
 
         # Pass market data with signal for visualisation
         StrategyVisualisation.import_market_data_with_trading_signal(self.dataHandler.get_processed_data())
