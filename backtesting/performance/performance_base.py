@@ -38,16 +38,12 @@ class PerformanceBase:
       direction = trade["direction"]
       fee = trade.get("fee", 0)
 
-      if direction == "long":
+      if direction == "LONG":
         raw_pnl = (exit_price - entry_price) * quantity
-      elif direction == "short":
+      elif direction == "SHORT":
         raw_pnl = (entry_price - exit_price) * quantity
       else:
-        raise ValueError("Invalid trade direction {direction}. Must be 'long' or 'short'.")
+        raise ValueError("Invalid trade direction {direction}. Must be 'LONG' or 'SHORT'.")
       
       pnl = raw_pnl - fee
       trade["pnl"] = pnl
-
-  @staticmethod
-  def import_closed_trades(closed_trades):
-    PerformanceBase.closed_trades = closed_trades

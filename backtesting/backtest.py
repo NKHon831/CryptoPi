@@ -9,6 +9,7 @@ from backtesting.portfolio.portfolio_manager import PortfolioManager
 from backtesting.performance.performance_base import PerformanceBase
 from backtesting.performance.performance_manager import PerformanceManager
 from backtesting.visualisation.visualisation import StrategyVisualisation
+from backtesting.visualisation.visualisation import MarketVisualisation
 
 class BackTest:
     def __init__(
@@ -16,7 +17,7 @@ class BackTest:
         dataHandler : BaseDataHandler, 
         strategy : StrategyBase, 
         # portfolio : Portfolio = Portfolio(),
-        performance : PerformanceBase = PerformanceBase(),
+        # performance : PerformanceBase = PerformanceBase(),
         portfolioManager : PortfolioManager = PortfolioManager(),
         broker : BrokerBase = DefaultBroker()
     ):
@@ -24,7 +25,7 @@ class BackTest:
         self.strategy = strategy 
         self.portfolioManager = portfolioManager   
         self.broker = broker
-        self.performance = performance
+        # self.performance = performance
 
     def run(self):
         print("\nRunning backtest...")
@@ -51,12 +52,18 @@ class BackTest:
         closed_trades = self.portfolioManager.export_closed_trades()
         performance_manager = PerformanceManager(closed_trades, self.portfolioManager.portfolio.initial_capital)
         scalar_metric, time_series_metric = performance_manager.get_metrics()
+        # strategyVisualiser = StrategyVisualisation(time_series_metric, scalar_metric)
+        # charts = strategyVisualiser.plot()
+        # for chart_name, fig in charts.items():
+        #     fig.show()
 
-        # # Pass closed_trades to performance
-        # PerformanceBase.import_closed_trades(self.portfolioManager.export_closed_trades())
-
-        # # Pass market data with signal for visualisation
-        # StrategyVisualisation.import_market_data_with_trading_signal(self.dataHandler.get_processed_data())
+        market_data = self.dataHandler.get_processed_data()
+        # market_visualisation = MarketVisualisation(market_data)
+        # market_visualisation.plot_price_chart().show()
+        strategy_visualiser = StrategyVisualisation(time_series_metric, scalar_metric, market_data)
+        charts = strategy_visualiser.plot()
+        for chart_name, fig in charts.items():
+            fig.show()
 
         # Visualise porfolio stats
         print("\nPortfolio Overview:")

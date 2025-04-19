@@ -66,3 +66,8 @@ def convert_MetricsJSON_dict(JSON_path):
     
   # Return the dictionary containing the performance metrics
   return metrics_data
+
+def match_portfolio_market_data(market_data):
+  market_data = market_data.rename_axis("datetime").reset_index()
+  market_data["datetime"] = pd.to_datetime(market_data["datetime"]).dt.strftime('%Y-%m-%d %H:%M:%S%z')
+  return market_data
