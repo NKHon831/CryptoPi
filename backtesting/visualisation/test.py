@@ -1,15 +1,15 @@
 # python -m backtesting.visualisation.test
 
-from backtesting.visualisation.visualisation import MarketVisualisation, StrategyVisualisation
+from backtesting.visualisation.visualisation import Visualisation
 from backtesting.visualisation.comparison.comparison_plot import ComparisonPlot
 from backtesting.performance.performance_manager import PerformanceManager
 from backtesting.visualisation.tools import convert_CSV_df, reformatDates, convert_JSON_df, convert_JSON_dict, convert_MetricsJSON_dict
 from backtesting.performance.tools import convert_JSON_list
 from backtesting.visualisation.comparison.data_merger import mergePerformanceData, mergePerformanceMetric
 
-if __name__ == '__main__':
-  market_df = reformatDates(convert_CSV_df('backtesting/visualisation/__pycache__/example_market_data.csv', 2))
-  print(market_df.head())
+# if __name__ == '__main__':
+  # market_df = reformatDates(convert_CSV_df('backtesting/visualisation/__pycache__/example_market_data.csv', 2))
+  # print(market_df.head())
 
   # MarketVisualisation(market_df).plot_price_chart().show()
 
