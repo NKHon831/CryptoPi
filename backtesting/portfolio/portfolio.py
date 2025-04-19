@@ -1,6 +1,8 @@
 from ..execution.Order import Order
 from ..execution.Trade import Trade
 from ..constants import MarketEntryType
+import pandas as pd
+import numpy as np
 
 class Portfolio:
     def __init__(
@@ -21,7 +23,6 @@ class Portfolio:
         self.closed_trades = []
         self.performance = None # Implement performance evaluation
         self.positions = []
-
         self.wallet = wallet
         self.holdings = holdings
         self.equity = self.get_equity_value()

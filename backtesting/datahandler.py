@@ -142,7 +142,7 @@ class BaseDataHandler:
 
         try:
             self.processed_data.to_csv(full_path)
-            print(f"✅ Binance Data exported to: {full_path}")
+            # print(f"✅ Binance Data exported to: {full_path}")
         except Exception as e:
             print(f"❌ Failed to export data: {e}")
 
@@ -513,8 +513,8 @@ model = LogisticRegressionModelData(symbol='BTC',
                           window="24h")
 
 df = model.fetch_all_endpoints()
-model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
-print(df.head())
+# model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
+# print(df.head())
 
 # # Benchmark Data
 # benchmark = BenchmarkData(

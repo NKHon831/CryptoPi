@@ -5,6 +5,8 @@ from backtesting.constants import MarketEntryType, TradeStatus, Signal, Directio
 import copy
 from backtesting.portfolio.position import Position
 import pandas as pd
+import numpy as np
+
 
 class PortfolioManager:
 
@@ -214,6 +216,20 @@ class PortfolioManager:
             max_drawdown = min(max_drawdown, position.drawdown)
 
         return max_drawdown
+    
+    def calculate_sharpe_ratio(self, periods_per_year=252, risk_free_rate=0.0):
+        equity_curve = []
+        for position in self.portfolio.positions:
+            if(position.equity is not None):
+                equity_curve.append(position.equity)
+        equity_array = np.array(equity_curve)
+        average_equity = np.mean(equity_array)
+        std_equity = np.std(equity_array)
+
+        sharpe_ratio = (average_equity / std_equity) * np.sqrt(365) 
+
+        return sharpe_ratio
+
 
 
 
