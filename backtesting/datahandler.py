@@ -1,4 +1,9 @@
 # python3 -m backtesting.datahandler 
+# Caching strategy:
+# - requests_cache: caches raw API HTTP responses
+# - joblib: caches the final merged + processed DataFrame
+# - unique filenames ensure different parameter combinations don’t overwrite each other
+
 
 import pandas as pd
 import numpy as np
@@ -8,11 +13,12 @@ from datetime import datetime, timezone
 import os
 from functools import reduce
 from config import Config
-# from backtesting.cache import L1Cache
 from functools import lru_cache
 import requests
 import requests_cache
 import time
+import os
+import joblib
 
 class BaseDataHandler:
     def __init__(self, 
@@ -75,13 +81,13 @@ class BaseDataHandler:
             session = requests_cache.CachedSession('api_cache', expire_after=3600)
             start=time.time()
             response = session.get(url, headers=headers, params=params)
-            print(f"⏱️ Duration: {time.time() - start:.4f}s")
+            print(f"⏱️ Binance Data Duration: {time.time() - start:.4f}s")
             
             # Check if the data was fetched from the cache
             if response.from_cache:
-                print("✅ Data fetched from cache!")
+                print("✅ Binance Data fetched from cache!")
             else:
-                print("📡 Data fetched from API!")
+                print("📡 Binance Data fetched from API!")
 
             # Check for errors in the response
             response.raise_for_status()
@@ -133,7 +139,7 @@ class BaseDataHandler:
 
         try:
             self.processed_data.to_csv(full_path)
-            print(f"✅ Data exported to: {full_path}")
+            print(f"✅ Binance Data exported to: {full_path}")
         except Exception as e:
             print(f"❌ Failed to export data: {e}")
 
@@ -147,7 +153,20 @@ class RegimeModelData(BaseDataHandler):
                  flatten: bool = True,):
         super().__init__(symbol, start_time, end_time, window, limit, flatten)
         # Automatically fetch the OHLC data when RegimeModelData is initialized
-        # self.fetch_binance_data()
+        cache_file = f"cache/processed_{symbol}_{window}_{start_time}_{end_time}.pkl"
+        start_timer = time.time()
+        if os.path.exists(cache_file):
+            print("📥 Loaded processed regime data from cache.")
+            self.processed_data = joblib.load(cache_file)
+        else:
+            # self.fetch_binance_data()
+            self.preprocess()
+            os.makedirs(os.path.dirname(cache_file), exist_ok=True)
+            joblib.dump(self.processed_data, cache_file)
+            print("ℹ️ Saved processed regime data to cache.")
+
+        end_timer = time.time()
+        print(f"⏱️ RegimeModelData duration: {end_timer - start_timer:.4f}s")
 
     def preprocess(self):
         df = self.raw_data
@@ -349,7 +368,7 @@ class FinalAlphaModelData(BaseDataHandler):
         }
 
         # Fetch data from each endpoint
-        for endpoint, custom_params in self.endpoint_config.items():
+        for endpoint in self.endpoint_config.items():
             print(f"Fetching: /{endpoint}")
             url = f"{self.base_url}/{endpoint}"
             params = self.common_params.copy()
@@ -400,6 +419,7 @@ class FinalAlphaModelData(BaseDataHandler):
             print("⚠️ 'timestamp' column not found in processed_data.")
 
         result = pd.merge(self.raw_data, combined_df, left_on='timestamp', right_on='timestamp', how='outer')
+        result["log_returns"] = np.log(result["close"] / result["close"].shift(1))
         self.processed_data = result
         return result
     
@@ -424,31 +444,22 @@ class BenchmarkData:
         return btc
 
 # # OHLC only
-ohlc = BaseDataHandler(symbol='BTC-USD',
-                      start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
-                      end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
-                      window="1h")
-raw_ohlc = ohlc.raw_data
-# ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
-print(raw_ohlc.tail)
-
-
-ohlc = BaseDataHandler(symbol='BTC-USD',
-                      start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
-                      end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
-                      window="1h")
-raw_ohlc = ohlc.raw_data
-# ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
-print(raw_ohlc.tail)
+# ohlc = BaseDataHandler(symbol='BTC-USD',
+#                       start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
+#                       end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
+#                       window="1h")
+# raw_ohlc = ohlc.raw_data
+# # ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
+# print(raw_ohlc.tail)
 
 # Regime Model Data Frame
-# regime_model = RegimeModelData(symbol='BTC-USD',
-#                         start_time=datetime(2025, 1, 1, tzinfo=timezone.utc),
-#                         end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
-#                         window="1h")
-# regime_model.preprocess()
-# regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
-# print(regime_model.processed_data.tail())
+regime_model = RegimeModelData(symbol='BTC-USD',
+                        start_time=datetime(2024, 4, 1, tzinfo=timezone.utc),
+                        end_time=datetime(2025, 4, 13, tzinfo=timezone.utc),
+                        window="1h")
+regime_model.preprocess()
+regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
+print(regime_model.processed_data.tail())
 
 # # Test the FinalAlphaModel class
 # model = FinalAlphaModelData(symbol='BTC',
