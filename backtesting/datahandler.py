@@ -321,8 +321,8 @@ class LogisticRegressionModelData(BaseDataHandler):
         self.endpoint_config = {
             "glassnode/addresses/min_10k_count": {}, # add_10_k
             "glassnode/addresses/min_100_count": {}, # add_100_btc
-            "glassnode/addresses/new_non_zero_count": {}, # new_adds
-            "glassnode/addresses/accumulation_count": {}, # new_adds
+            "glassnode/addresses/new_non_zero_count": {}, # new_adds 
+            # "glassnode/addresses/accumulation_count": {}, # new_adds
             "glassnode/addresses/count": {}, # total_adds
             "glassnode/supply/active_more_1y_percent": {}, # s_last_act_1y
             "glassnode/blockchain/block_count": {}, # blocks_mined
@@ -359,7 +359,7 @@ class LogisticRegressionModelData(BaseDataHandler):
             "glassnode/indicators/nvts": {}, # nvts_signal
             "glassnode/indicators/reserve_risk": {}, # reserve_risk
             "glassnode/indicators/rhodl_ratio": {}, # rhodl_ratio
-            "glassnode/indicators/seller_exhaustion_constant": {}, # seller_exhaustion
+            # "glassnode/indicators/seller_exhaustion_constant": {}, # seller_exhaustion
             "glassnode/indicators/stock_to_flow_deflection": {}, # s_flow_def1
             # "glassnode/transactions/transfers_count": {}, # Not sure why does not support BTC # tra_count
             "glassnode/blockchain/utxo_created_count": {}, # utx_created
@@ -507,14 +507,26 @@ def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=3600):
 # print(regime_model.processed_data.tail())
 
 # # Test the FinalAlphaModel class
-model = LogisticRegressionModelData(symbol='BTC',
-                          start_time=datetime(2022, 12, 1, tzinfo=timezone.utc),
-                          end_time=datetime(2023, 1, 4, tzinfo=timezone.utc),
-                          window="24h")
 
-df = model.fetch_all_endpoints()
+# model = LogisticRegressionModelData(symbol='BTC',
+#                           start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
+#                           end_time=datetime(2024, 1, 1, tzinfo=timezone.utc),
+#                           window="1h")
+
+# df = model.fetch_all_endpoints()
 # model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
 # print(df.head())
+# print(df.tail())
+
+# model = LogisticRegressionModelData(symbol='BTC',
+#                           start_time=datetime(2022, 12, 1, tzinfo=timezone.utc),
+#                           end_time=datetime(2023, 1, 4, tzinfo=timezone.utc),
+#                           window="24h")
+
+# df = model.fetch_all_endpoints()
+# model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
+# print(df.head())
+
 
 # # Benchmark Data
 # benchmark = BenchmarkData(
@@ -527,6 +539,7 @@ df = model.fetch_all_endpoints()
 
 # data=BaseDataHandler.load_from_disc("/Users/pohsharon/Downloads/UMH/ohlc.csv")
 # print(data.tail())
+
 '''
 Base Data & Regime Model Interval
 1m 3m 5m 10m 15m 30m 1h 2h 4h 6h 12h 1d 3d 1w 1M
