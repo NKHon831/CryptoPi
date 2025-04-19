@@ -1,6 +1,4 @@
 class PerformanceBase:
-  closed_trades = None
-
   def __init__(self, trades, initial_capital, fee_rate=0.06):
     self.trades = trades
     self.initial_capital = initial_capital

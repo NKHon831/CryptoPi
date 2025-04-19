@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
 import os
 from functools import reduce
 from config import Config
@@ -384,9 +384,9 @@ class FinalAlphaModelData(BaseDataHandler):
         return result
     
 class BenchmarkData:
-    def __init__(self, symbol: str, start_time: datetime, end_time: datetime, interval: str):
+    def __init__(self, symbol: str, start_time: datetime, end_time: datetime, interval: str = '1d'):
         self.symbol = symbol
-        self.start_time = start_time
+        self.start_time = start_time - timedelta(days=5)  # Buffer
         self.end_time = end_time
         self.interval = interval
 
@@ -399,8 +399,10 @@ class BenchmarkData:
             progress=False
         )
         btc = btc[['Close']].rename(columns={'Close': 'benchmark'})
+        btc.index = pd.to_datetime(btc.index)
+        btc = btc[~btc.index.duplicated()]  # Remove any duplicates
         btc.reset_index(inplace=True)
-        print(btc.head())
+        # print(btc.head())
         return btc
 
 # # OHLC only
@@ -432,13 +434,13 @@ class BenchmarkData:
 # print(df.head())
 
 # Benchmark Data
-benchmark = BenchmarkData(
-    symbol='BTC-USD',
-    start_time=datetime(2024, 3, 1),
-    end_time=datetime(2024, 4, 1),
-    interval='60m'
-)
-btc_data = benchmark.fetch_yfinance_data()
+# benchmark = BenchmarkData(
+#     symbol='BTC-USD',
+#     start_time=datetime(2024, 3, 1),
+#     end_time=datetime(2024, 4, 1),
+#     interval='60m'
+# )
+# btc_data = benchmark.fetch_yfinance_data()
 
 '''
 Base Data & Regime Model Interval
