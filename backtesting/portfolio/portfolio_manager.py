@@ -81,7 +81,7 @@ class PortfolioManager:
                 self.close_a_trade(trade_to_close, executed_order, traded_quantity)
 
                 #  Move the closed trade from open trades to closed trades
-                closed_trade = open_trades.pop()
+                closed_trade = open_trades.pop(0)
                 self.portfolio.add_closed_trade(closed_trade)
 
             elif(traded_quantity == order_quantity_to_close):
@@ -149,6 +149,16 @@ class PortfolioManager:
         } for trade in self.portfolio.get_closed_trades()]
 
         return closed_trades
+    
+
+    def get_max_drawdown(self):
+        max_drawdown = float('inf')
+
+        for position in self.portfolio.positions:
+            max_drawdown = min(max_drawdown, position.drawdown)
+
+        return max_drawdown
+
 
 
 

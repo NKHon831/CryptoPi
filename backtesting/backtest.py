@@ -16,8 +16,6 @@ class BackTest:
         self, 
         dataHandler : BaseDataHandler, 
         strategy : StrategyBase, 
-        # portfolio : Portfolio = Portfolio(),
-        # performance : PerformanceBase = PerformanceBase(),
         portfolioManager : PortfolioManager = PortfolioManager(),
         broker : BrokerBase = DefaultBroker()
     ):
@@ -59,7 +57,13 @@ class BackTest:
                 executed_order = self.portfolioManager.portfolio.executed_orders[-1]
 
             if(len(self.portfolioManager.portfolio.positions) == 0):
-                position = Position(Direction.NEUTRAL,0,0,0,0)
+                if(executed_order is None):
+                    position = Position(Direction.NEUTRAL,0,0,0,0)
+                else:
+                    if(executed_order.trading_signal is Signal.BUY ):
+                        position = Position(Direction.LONG, executed_order.quantity)
+                    else:
+                        position = Position(Direction.SHORT, executed_order.quantity)
                 self.portfolioManager.portfolio.positions.append(position)
 
             else:
@@ -88,32 +92,43 @@ class BackTest:
                 #calculate pnl
                 previous_row = df_historicalData.iloc[i-1]
                 price_change = (data['close'] / previous_row['close']) -1
+                pnl = (price_change * previous_position.direction) - 0.0006 
 
-                pnl = (price_change * previous_position.direction * previous_position.size) - (0.0006 * num_of_executed_order)
+                # add new position
                 new_position.pnl = pnl
-                equity = sum(position.pnl for position in self.portfolioManager.portfolio.positions)
-                new_position.equity = equity
-
                 self.portfolioManager.portfolio.positions.append(new_position)
-                
+
+                # calculate equity and drawdown
+                equity = sum(position.pnl for position in self.portfolioManager.portfolio.positions)
+                self.portfolioManager.portfolio.max_equity = max(equity, self.portfolioManager.portfolio.max_equity)
+                current_drawdown = equity - self.portfolioManager.portfolio.max_equity
+
+                #update position
+                new_position.equity = equity
+                new_position.drawdown = current_drawdown       
+
         print("\nBacktest completed.")
 
-        closed_trades = self.portfolioManager.export_closed_trades()
-        performance_manager = PerformanceManager(closed_trades, self.portfolioManager.portfolio.initial_capital)
-        scalar_metric, time_series_metric = performance_manager.get_metrics()
+        # closed_trades = self.portfolioManager.export_closed_trades()
+        # performance_manager = PerformanceManager(closed_trades, self.portfolioManager.portfolio.initial_capital)
+        # scalar_metric, time_series_metric = performance_manager.get_metrics()
 
-        market_data = self.dataHandler.get_processed_data()
-        visualiser = Visualisation(time_series_metric, scalar_metric, market_data)
-        charts = visualiser.plot()
-        for chart_name, fig in charts.items():
-            fig.show()
+        # market_data = self.dataHandler.get_processed_data()
+        # visualiser = Visualisation(time_series_metric, scalar_metric, market_data)
+        # charts = visualiser.plot()
+        # # for chart_name, fig in charts.items():
+        # #     fig.show()
 
         # Visualise porfolio stats
-        # print("\nPortfolio Overview:")
-        # self.portfolioManager.portfolio.overview()
+        print("\nPortfolio Overview:")
+        self.portfolioManager.portfolio.overview()
 
+        # print()
         # for position in self.portfolioManager.portfolio.positions:
         #     print(position)
+
+        print("Max drawdown: ", self.portfolioManager.get_max_drawdown())
+
         
             
         

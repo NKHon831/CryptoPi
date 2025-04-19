@@ -10,7 +10,7 @@ class SampleStrategy(StrategyBase):
         self.finalAlphaModel = FinalAlphaModel()
 
     def generate_trading_signal(self, data, datetime = None):
-        if(data['high'] > 43.2):
+        if(data['close'] < 60):
         # if(random.random() <= 0.5):
             return Signal.BUY
         else :
