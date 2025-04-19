@@ -10,9 +10,9 @@ class PortfolioManager:
 
     def __init__(
             self,
-            portfolio : Portfolio = Portfolio()
+            portfolio : Portfolio = None
         ):
-        self.portfolio = portfolio
+        self.portfolio = portfolio if portfolio is not None else Portfolio()
 
     def send_pending_orders(self):
         pending_orders = self.portfolio.pending_orders.copy()

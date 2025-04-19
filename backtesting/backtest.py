@@ -19,11 +19,13 @@ class BackTest:
         strategy : StrategyBase, 
         end_backtest : datetime,
         portfolioManager : PortfolioManager = PortfolioManager(),
+        portfolioManager2 : PortfolioManager = PortfolioManager(),
         broker : BrokerBase = DefaultBroker()
     ):
         self.dataHandler = dataHandler
         self.strategy = strategy 
-        self.portfolioManager = portfolioManager  
+        self.portfolioManager = portfolioManager
+        self.portfolioManager2 = portfolioManager2
         self.end_backtest = end_backtest
         self.broker = broker
 
@@ -39,22 +41,53 @@ class BackTest:
             data = df_historicalData.iloc[i]
             index = df_historicalData.index[i]
             
-            # Trading signal generation and Order creation for current row
-            trading_signal = self.strategy.generate_trading_signal(data, index)
-            df_historicalData.loc[index, 'trading_signal'] = Signal.map_to_binary(trading_signal)
+            if (index <= self.end_backtest.replace(tzinfo=timezone.utc)):
 
-            if trading_signal in Signal.TRADING_SIGNALS:
-                self.portfolioManager.generate_order(self.dataHandler.symbol, trading_signal, data)
+                # Trading signal generation and Order creation for current row
+                trading_signal = self.strategy.generate_trading_signal(data, index)
+                df_historicalData.loc[index, 'trading_signal'] = Signal.map_to_binary(trading_signal)
 
-            # pending orders execution
-            if self.portfolioManager.portfolio.get_pending_orders() :
-                results = self.broker.execute_orders(self.portfolioManager.send_pending_orders(), self.portfolioManager.portfolio.wallet , data, index)
-                self.portfolioManager.update_orders(results)     
-                
-                # update portfolio 
-                previous_data = df_historicalData.iloc[i-1]
-                current_data = data
-                self.portfolioManager.update_portfolio(previous_data, current_data)
+                if trading_signal in Signal.TRADING_SIGNALS:
+                    self.portfolioManager.generate_order(self.dataHandler.symbol, trading_signal, data)
+
+                # pending orders execution
+                if self.portfolioManager.portfolio.get_pending_orders() :
+                    results = self.broker.execute_orders(self.portfolioManager.send_pending_orders(), self.portfolioManager.portfolio.wallet , data, index)
+                    self.portfolioManager.update_orders(results)     
+                    
+                    # update portfolio 
+                    previous_data = df_historicalData.iloc[i-1]
+                    current_data = data
+                    self.portfolioManager.update_portfolio(previous_data, current_data)
+            else :
+                break
+        
+        for i in range(len(df_historicalData)): 
+            data = df_historicalData.iloc[i]
+            index = df_historicalData.index[i]
+            
+            if (index > self.end_backtest.replace(tzinfo=timezone.utc)):
+
+                # Trading signal generation and Order creation for current row
+                trading_signal = self.strategy.generate_trading_signal(data, index)
+                df_historicalData.loc[index, 'trading_signal'] = Signal.map_to_binary(trading_signal)
+
+                if trading_signal in Signal.TRADING_SIGNALS:
+                    self.portfolioManager2.generate_order(self.dataHandler.symbol, trading_signal, data)
+
+                # pending orders execution
+                if self.portfolioManager2.portfolio.get_pending_orders() :
+                    results = self.broker.execute_orders(self.portfolioManager2.send_pending_orders(), self.portfolioManager2.portfolio.wallet , data, index)
+                    self.portfolioManager2.update_orders(results)     
+                    
+                    # update portfolio 
+                    previous_data = df_historicalData.iloc[i-1]
+                    current_data = data
+                    self.portfolioManager2.update_portfolio(previous_data, current_data)
+            else :
+                continue
+
+
                    
         print("Backtest completed.")
         print("Backtest result : ")
@@ -64,6 +97,16 @@ class BackTest:
         self.portfolioManager.portfolio.overview()
 
         print("Max drawdown: ", self.portfolioManager.get_max_drawdown())
+        print()
+
+        print("Forward test completed.")
+        print("Forward result : ")
+
+        # Visualise porfolio stats
+        print("\nPortfolio Overview:")
+        self.portfolioManager2.portfolio.overview()
+
+        print("Max drawdown: ", self.portfolioManager2.get_max_drawdown())
         print()
         
         # closed_trades = self.portfolioManager.export_closed_trades()
