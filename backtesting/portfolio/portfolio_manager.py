@@ -5,14 +5,16 @@ from backtesting.constants import MarketEntryType, TradeStatus, Signal, Directio
 import copy
 from backtesting.portfolio.position import Position
 import pandas as pd
+import numpy as np
+
 
 class PortfolioManager:
 
     def __init__(
-            self, 
-            portfolio : Portfolio = Portfolio()
+            self,
+            portfolio : Portfolio = None
         ):
-        self.portfolio = portfolio
+        self.portfolio = portfolio if portfolio is not None else Portfolio()
 
     def send_pending_orders(self):
         pending_orders = self.portfolio.pending_orders.copy()
@@ -81,7 +83,7 @@ class PortfolioManager:
                 self.close_a_trade(trade_to_close, executed_order, traded_quantity)
 
                 #  Move the closed trade from open trades to closed trades
-                closed_trade = open_trades.pop()
+                closed_trade = open_trades.pop(0)
                 self.portfolio.add_closed_trade(closed_trade)
 
             elif(traded_quantity == order_quantity_to_close):
@@ -149,6 +151,86 @@ class PortfolioManager:
         } for trade in self.portfolio.get_closed_trades()]
 
         return closed_trades
+    
+    def update_portfolio(self, previous_data, current_data):
+        
+        executed_order = None
+        # Update position by row
+        if(len(self.portfolio.executed_orders) != 0):
+            executed_order = self.portfolio.executed_orders[-1]
+
+        if(len(self.portfolio.positions) == 0):
+            if(executed_order is None):
+                position = Position(Direction.NEUTRAL,0,0,0,0)
+            else:
+                if(executed_order.trading_signal is Signal.BUY ):
+                    position = Position(Direction.LONG, executed_order.quantity)
+                else:
+                    position = Position(Direction.SHORT, executed_order.quantity)
+            self.portfolio.positions.append(position)
+
+        else:
+            previous_position = self.portfolio.positions[-1]
+
+            updated_holdings = 0
+            if(executed_order is None):
+                updated_holdings = previous_position.size
+            else:
+                if(executed_order.trading_signal is Signal.BUY):
+                    updated_holdings = previous_position.size + executed_order.quantity
+                else:
+                    updated_holdings = previous_position.size - executed_order.quantity
+
+
+            direction = 0
+            if(updated_holdings > 0):
+                direction = 1
+            elif(updated_holdings < 0):
+                direction = -1
+            else:
+                direction = 0
+            
+            new_position = Position(direction, updated_holdings)
+
+            #calculate pnl
+            price_change = (current_data['close'] / previous_data['close']) -1
+            pnl = (price_change * previous_position.direction) - 0.0006 
+
+            # add new position
+            new_position.pnl = pnl
+            self.portfolio.positions.append(new_position)
+
+            # calculate equity and drawdown
+            equity = sum(position.pnl for position in self.portfolio.positions)
+            self.portfolio.max_equity = max(equity, self.portfolio.max_equity)
+            current_drawdown = equity - self.portfolio.max_equity
+
+            #update position
+            new_position.equity = equity
+            new_position.drawdown = current_drawdown  
+
+    def get_max_drawdown(self):
+        max_drawdown = float('inf')
+
+        for position in self.portfolio.positions:
+            max_drawdown = min(max_drawdown, position.drawdown)
+
+        return max_drawdown
+    
+    def calculate_sharpe_ratio(self, periods_per_year=252, risk_free_rate=0.0):
+        equity_curve = []
+        for position in self.portfolio.positions:
+            if(position.equity is not None):
+                equity_curve.append(position.equity)
+        equity_array = np.array(equity_curve)
+        average_equity = np.mean(equity_array)
+        std_equity = np.std(equity_array)
+
+        sharpe_ratio = (average_equity / std_equity) * np.sqrt(365) 
+
+        return sharpe_ratio
+
+
 
 
 

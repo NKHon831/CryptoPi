@@ -85,10 +85,10 @@ class BaseDataHandler:
             print(f"⏱️ Binance Data Duration: {time.time() - start:.4f}s")
             
             # Check if the data was fetched from the cache
-            if response.from_cache:
-                print("✅ Binance Data fetched from cache!")
-            else:
-                print("📡 Binance Data fetched from API!")
+            # if response.from_cache:
+            #     print("✅ Binance Data fetched from cache!")
+            # else:
+            #     print("📡 Binance Data fetched from API!")
 
             # Check for errors in the response
             
@@ -105,9 +105,9 @@ class BaseDataHandler:
             # Ensure required columns are present
             expected_cols = ["start_time", "close", "high", "low", "open", "volume", ]
             missing_cols = [col for col in expected_cols if col not in df.columns]
-            if missing_cols:
-                pass
-                # print(f"⚠️ Missing columns: {missing_cols}")
+            # if missing_cols:
+            #     pass
+            #     # print(f"⚠️ Missing columns: {missing_cols}")
 
             # Convert timestamp
             df["start_time"] = pd.to_datetime(df["start_time"], unit="ms", utc=True)
@@ -142,7 +142,7 @@ class BaseDataHandler:
 
         try:
             self.processed_data.to_csv(full_path)
-            print(f"✅ Binance Data exported to: {full_path}")
+            # print(f"✅ Binance Data exported to: {full_path}")
         except Exception as e:
             print(f"❌ Failed to export data: {e}")
 
@@ -507,6 +507,7 @@ def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=3600):
 # print(regime_model.processed_data.tail())
 
 # # Test the FinalAlphaModel class
+
 # model = LogisticRegressionModelData(symbol='BTC',
 #                           start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
 #                           end_time=datetime(2024, 1, 1, tzinfo=timezone.utc),
@@ -517,6 +518,16 @@ def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=3600):
 # print(df.head())
 # print(df.tail())
 
+# model = LogisticRegressionModelData(symbol='BTC',
+#                           start_time=datetime(2022, 12, 1, tzinfo=timezone.utc),
+#                           end_time=datetime(2023, 1, 4, tzinfo=timezone.utc),
+#                           window="24h")
+
+# df = model.fetch_all_endpoints()
+# model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
+# print(df.head())
+
+
 # # Benchmark Data
 # benchmark = BenchmarkData(
 #     symbol='BTC-USD',
@@ -525,6 +536,9 @@ def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=3600):
 #     interval='60m'
 # )
 # btc_data = benchmark.fetch_yfinance_data()
+
+# data=BaseDataHandler.load_from_disc("/Users/pohsharon/Downloads/UMH/ohlc.csv")
+# print(data.tail())
 
 '''
 Base Data & Regime Model Interval

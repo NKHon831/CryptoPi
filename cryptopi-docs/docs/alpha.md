@@ -1,4 +1,4 @@
-## Final Alpha Model
+## Alpha Model
 
 This module provides a unified interface for training and evaluating machine learning models, including a Transformer-based deep learning model for sequential data and an XGBoost model for tabular data.
 

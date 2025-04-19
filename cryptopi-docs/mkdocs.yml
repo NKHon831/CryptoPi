@@ -7,8 +7,9 @@ nav:
       - Strategy: strategy.md
       - Execution: execution.md
       - Model:
-          - SentimentAnalysisModel: sentiment.md
-          - FinalAlphaModel: alpha.md
+          #   - SentimentAnalysisModel: sentiment.md
+          - RegimeDetectionModel: regime.md
+          - AlphaModel: alpha.md
       - Performance: performance.md
       - Visualisation: visualisation.md
 theme: material

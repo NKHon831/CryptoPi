@@ -21,3 +21,6 @@ exports/
 # Ignore cache files
 cache/
 api_cache.sqlite
+
+# Ignore site folder
+cryptopi-docs/site/
