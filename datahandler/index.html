@@ -1,0 +1,1594 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../portfolio/">
+      
+      
+        <link rel="next" href="../strategy/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>DataHandler - CryptoPi Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#basedatahandler" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="CryptoPi Documentation" class="md-header__button md-logo" aria-label="CryptoPi Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            CryptoPi Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              DataHandler
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="CryptoPi Documentation" class="md-nav__button md-logo" aria-label="CryptoPi Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    CryptoPi Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Modules
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Modules
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../portfolio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Portfolio
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    DataHandler
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    DataHandler
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basedatahandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseDataHandler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseDataHandler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Internal Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regimemodeldata" class="md-nav__link">
+    <span class="md-ellipsis">
+      RegimeModelData
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RegimeModelData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Indicators
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Caching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-methods_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logisticregressionmodeldata" class="md-nav__link">
+    <span class="md-ellipsis">
+      LogisticRegressionModelData
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LogisticRegressionModelData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#indicators_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Indicators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Indicators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Addresses
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-blockchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Blockchain
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-mining" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Mining
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Indicators
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-supply" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Supply
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Transactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-methods_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarkdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      BenchmarkData
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BenchmarkData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#public-methods_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#catching-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Catching Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Catching Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requests_cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      requests_cache
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#joblib" class="md-nav__link">
+    <span class="md-ellipsis">
+      joblib
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Strategy
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../execution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Execution
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_1_6" id="__nav_1_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Model
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1_6">
+            <span class="md-nav__icon md-icon"></span>
+            Model
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../regime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RegimeDetectionModel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../alpha/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    AlphaModel
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Performance
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../visualisation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Visualisation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#basedatahandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      BaseDataHandler
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseDataHandler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Parameters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#internal-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Internal Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regimemodeldata" class="md-nav__link">
+    <span class="md-ellipsis">
+      RegimeModelData
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RegimeModelData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      Indicators
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Caching
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-methods_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#logisticregressionmodeldata" class="md-nav__link">
+    <span class="md-ellipsis">
+      LogisticRegressionModelData
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LogisticRegressionModelData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#indicators_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Indicators
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Indicators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. Addresses
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-blockchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. Blockchain
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. Distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-mining" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. Mining
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-indicators" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. Indicators
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-supply" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. Supply
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-transactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. Transactions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-methods_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-usage_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example Usage
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarkdata" class="md-nav__link">
+    <span class="md-ellipsis">
+      BenchmarkData
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BenchmarkData">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#public-methods_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Public Methods
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#catching-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Catching Strategy
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Catching Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requests_cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      requests_cache
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#joblib" class="md-nav__link">
+    <span class="md-ellipsis">
+      joblib
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>DataHandler</h1>
+
+<p>This module provides a structured, extensible way to retrieve, process, and cache financial and crypto market data from various sources. It consists of a base class <code>BaseDataHandler</code> and two specialized subclasses: <code>RegimeModelData</code> and <code>FinalAlphaModelData</code>.</p>
+<h2 id="basedatahandler">BaseDataHandler</h2>
+<p>Handles the core logic for fetching raw data from various APIs, applying preprocessing functions, and caching the results using <code>joblib</code> and <code>requests_cache</code>.  </p>
+<h3 id="parameters">Parameters</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>symbol</td>
+<td>string</td>
+<td>Trading pair or asset (e.g., BTC)</td>
+</tr>
+<tr>
+<td>start_time</td>
+<td>datetime</td>
+<td>Start of data range (e.g., datetime(2024, 4, 17)).</td>
+</tr>
+<tr>
+<td>end_time</td>
+<td>datetime</td>
+<td>End of data range (e.g., datetime(2024, 4, 18)).</td>
+</tr>
+<tr>
+<td>window</td>
+<td>string</td>
+<td>Timeframe for data (e.g., 1d, 1h, 15m).</td>
+</tr>
+<tr>
+<td>limit</td>
+<td>(int, default=100000)</td>
+<td>Maximum number of rows to fetch.</td>
+</tr>
+<tr>
+<td>flatten</td>
+<td>(bool, default=True)</td>
+<td>If True, flattens nested JSON data when applicable.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="public-methods">Public Methods</h3>
+<ul>
+<li><code>fetch_binance_data()</code>: Downloads OHLCV data from Binance via Cybotrade Datasource API. Automatically uses <code>requests_cache</code> to cache results.</li>
+<li><code>get_processed_data()</code>: Returns the processed pandas DataFrame.</li>
+<li><code>export(path: str, filename: str)</code>: Saves the processed data to a CSV file at the given path.</li>
+<li><code>load_from_disc(path: str)</code> : Loads raw data from a CSV file into the internal raw_data container.</li>
+</ul>
+<h3 id="internal-methods">Internal Methods</h3>
+<ul>
+<li><code>convert_to_unix_ms(dt: datetime)</code> : Converts a datetime object to a UNIX timestamp in milliseconds.</li>
+<li><code>_generate_cache_key()</code>: Returns a tuple used to identify cached results.</li>
+<li><code>_get_cache_key()</code>: Returns a string-formatted version of the cache key.</li>
+</ul>
+<h3 id="example-usage">Example Usage</h3>
+<pre><code class="language-python">from backtesting.datahandler import BaseDataHandler
+
+baseDataHandler = BaseDataHandler(symbol='BTC-USD',
+                      start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
+                      end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
+                      window=&quot;1h&quot;)
+</code></pre>
+<h2 id="regimemodeldata">RegimeModelData</h2>
+<p>Custom data handler for regime classification models. Applies a series of volatility, trend, momentum, and volume-based indicators to compute regime shifts in market behavior.</p>
+<h3 id="indicators">Indicators</h3>
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Internal Method</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Log Return</td>
+<td>(inline in <code>preprocess</code>)</td>
+<td>Measures relative price change; used to standardize returns.</td>
+</tr>
+<tr>
+<td>Volatility (10)</td>
+<td>(inline in <code>preprocess</code>)</td>
+<td>Rolling standard deviation of log returns; used to assess price turbulence.</td>
+</tr>
+<tr>
+<td>Vol-Adj Return</td>
+<td>(inline in <code>preprocess</code>)</td>
+<td>Normalizes return by volatility; highlights abnormal movements.</td>
+</tr>
+<tr>
+<td>EMA (50, 200)</td>
+<td>compute_ema, compute_ema_200</td>
+<td>Tracks price trend smoothness over short/long periods.</td>
+</tr>
+<tr>
+<td>RSI (14)</td>
+<td>compute_rsi</td>
+<td>Identifies overbought/oversold conditions.</td>
+</tr>
+<tr>
+<td>MACD + Signal</td>
+<td>compute_macd</td>
+<td>Detects trend reversals via moving average crossovers.</td>
+</tr>
+<tr>
+<td>ATR (14)</td>
+<td>compute_atr</td>
+<td>Measures price range volatility for risk analysis.</td>
+</tr>
+<tr>
+<td>SAR</td>
+<td>compute_sar</td>
+<td>Trend-following indicator showing potential reversals.</td>
+</tr>
+<tr>
+<td>Slope (14)</td>
+<td>compute_slope</td>
+<td>Measures directional rate of change.</td>
+</tr>
+<tr>
+<td>ADX (14)</td>
+<td>compute_adx</td>
+<td>Quantifies trend strength regardless of direction.</td>
+</tr>
+<tr>
+<td>OBV</td>
+<td>compute_obv_vectorized</td>
+<td>Measures volume flow to validate price trends.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="caching">Caching</h3>
+<ul>
+<li>Loads from or saves to disk using <code>joblib</code> under <code>cache/processed/</code>.</li>
+<li>Automatically cleans up old cache files (older than 1 hour).</li>
+</ul>
+<h3 id="public-methods_1">Public Methods</h3>
+<p>Inherits all public methods from <code>BaseDataHandler</code>.</p>
+<h3 id="example-usage_1">Example Usage</h3>
+<pre><code class="language-python">from backtesting.datahandler import RegimeModelData
+
+regimeModelData = RegimeModelData(symbol='BTC-USD',
+                      start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
+                      end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
+                      window=&quot;1h&quot;)
+</code></pre>
+<h2 id="logisticregressionmodeldata">LogisticRegressionModelData</h2>
+<p>Specialized class for fetching multiple alpha-relevant features from Glassnode using the Cybotrade Datasource API. Data is compiled into a single DataFrame.</p>
+<h3 id="indicators_1">Indicators</h3>
+<h4 id="1-addresses">1. Addresses</h4>
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>min_10k_count</td>
+<td>Number of addresses holding at least 10,000 units of an asset. Indicates whale activity and market influence.</td>
+</tr>
+<tr>
+<td>min_100_count</td>
+<td>Number of addresses holding at least 100 units. Tracks retail accumulation.</td>
+</tr>
+<tr>
+<td>new_non_zero_count</td>
+<td>Number of new addresses with non-zero balance. Proxy for network growth and adoption.</td>
+</tr>
+<tr>
+<td>accumulation_count</td>
+<td>Addresses consistently accumulating more coins over time. Signals strong investor conviction.</td>
+</tr>
+<tr>
+<td>count</td>
+<td>Total number of addresses. General measure of network size.</td>
+</tr>
+<tr>
+<td>sopr</td>
+<td>Spent Output Profit Ratio. Ratio of price sold vs price paid for coins moved. Values &gt;1 indicate profit taking.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="2-blockchain">2. Blockchain</h4>
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>block_count</td>
+<td>Number of blocks mined. Indicates network liveness.</td>
+</tr>
+<tr>
+<td>utxo_created_count</td>
+<td>Number of unspent transaction outputs created. Reflects transaction activity and coin movement.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="3-distribution">3. Distribution</h4>
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>balance_exchanges</td>
+<td>Aggregate balance held on exchanges. Tracks potential sell-side liquidity and risk-on/risk-off sentiment.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="4-mining">4. Mining</h4>
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hash_rate_mean</td>
+<td>Average hash rate over time. Proxy for network security and miner sentiment.</td>
+</tr>
+<tr>
+<td>revenue_from_fees</td>
+<td>Miner revenue from transaction fees. Reflects demand for block space.</td>
+</tr>
+<tr>
+<td>realized_loss</td>
+<td>Total value of coins moved at a lower price than they were acquired. Tracks panic selling.</td>
+</tr>
+<tr>
+<td>realized_profit</td>
+<td>Total value of coins moved at a higher price than acquisition. Indicates profit realization.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="5-indicators">5. Indicators</h4>
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>net_realized_profit_loss</td>
+<td>Difference between realized profit and loss. Signals net capital flows on-chain.</td>
+</tr>
+<tr>
+<td>net_unrealized_profit_loss</td>
+<td>Unrealized gains/losses across all held coins. Used to identify market euphoria or fear.</td>
+</tr>
+<tr>
+<td>liveliness</td>
+<td>Ratio of total coin days destroyed to total coin days created. Indicates HODLing behavior.</td>
+</tr>
+<tr>
+<td>nvt</td>
+<td>Network Value to Transactions ratio. Higher values suggest overvaluation relative to usage.</td>
+</tr>
+<tr>
+<td>nvts</td>
+<td>NVT Signal: smoothed version of NVT for better signal extraction.</td>
+</tr>
+<tr>
+<td>reserve_risk</td>
+<td>Risk/reward ratio based on HODL waves and price. Useful for long-term valuation.</td>
+</tr>
+<tr>
+<td>rhodl_ratio</td>
+<td>Combines age bands of coins to detect overheated or undervalued markets.</td>
+</tr>
+<tr>
+<td>seller_exhaustion_constant</td>
+<td>Measures when price and miner sell pressure are both low. Bullish reversal signal.</td>
+</tr>
+<tr>
+<td>stock_to_flow_deflection</td>
+<td>Deviation from S2F model. Gauges scarcity relative to issuance.</td>
+</tr>
+<tr>
+<td>velocity</td>
+<td>Rate of turnover of coins in the network. High values indicate economic activity.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="6-supply">6. Supply</h4>
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>active_more_1y_percent</td>
+<td>Percentage of coins unmoved for over 1 year. Indicates long-term holder conviction.</td>
+</tr>
+<tr>
+<td>inflation_rate</td>
+<td>Annualized increase in circulating supply. Important for monetary policy modeling.</td>
+</tr>
+<tr>
+<td>loss_sum</td>
+<td>Aggregate USD value of all coins currently in loss. Shows unrealized downside risk.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="7-transactions">7. Transactions</h4>
+<table>
+<thead>
+<tr>
+<th>Indicator</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>transfers_to_exchanges_count_pit</td>
+<td>Count of transactions sent to exchanges. Can indicate rising sell pressure.</td>
+</tr>
+<tr>
+<td>transfers_volume_to_exchanges_sum</td>
+<td>Total volume sent to exchanges. Tracks potential supply-side liquidity.</td>
+</tr>
+<tr>
+<td>transfers_volume_exchanges_net_pit</td>
+<td>Net transfer volume in/out of exchanges. Positive values indicate accumulation.</td>
+</tr>
+<tr>
+<td>transfers_volume_from_exchanges_mean_pit</td>
+<td>Average volume withdrawn from exchanges. High values indicate investor confidence.</td>
+</tr>
+<tr>
+<td>transfers_volume_from_exchanges_sum_pit</td>
+<td>Total volume withdrawn from exchanges. Measures HODLer behavior.</td>
+</tr>
+<tr>
+<td>transfers_from_exchanges_count_pit</td>
+<td>Number of withdrawal transactions. Correlates with exchange outflows.</td>
+</tr>
+<tr>
+<td>transfers_volume_entity_adjusted_sum_pit</td>
+<td>Total adjusted transfer volume across all entities. Filters internal transfers.</td>
+</tr>
+<tr>
+<td>transfers_volume_within_exchanges_sum_pit</td>
+<td>Volume moving between wallets within the same exchange. Tracks internal flow.</td>
+</tr>
+<tr>
+<td>transfers_volume_between_exchanges_sum_pit</td>
+<td>Volume moved between different exchanges. Reflects inter-exchange arbitrage and liquidity shift.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="public-methods_2">Public Methods</h4>
+<ul>
+<li><code>fetch_all_endpoints()</code>: Aggregates data from all endpoints using common parameters and returns a single DataFrame.</li>
+</ul>
+<h3 id="example-usage_2">Example Usage</h3>
+<pre><code class="language-python">from backtesting.datahandler import LogisticRegressionModelData
+
+logisticRegressionModel = LogisticRegressionModelData(symbol='BTC-USD',
+                      start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
+                      end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
+                      window=&quot;1h&quot;)
+</code></pre>
+<h2 id="benchmarkdata">BenchmarkData</h2>
+<p>A lightweight benchmark data handler designed to fetch historical closing price data from Yahoo Finance using the yfinance library. Primarily used to serve as a market benchmark (e.g., BTC/USD) for performance comparison in model backtesting.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>symbol</td>
+<td>string</td>
+<td>Trading pair or asset (e.g., BTC-USD)</td>
+</tr>
+<tr>
+<td>start_time</td>
+<td>datetime</td>
+<td>Start of data range (e.g., datetime(2024, 4, 17)).</td>
+</tr>
+<tr>
+<td>end_time</td>
+<td>datetime</td>
+<td>End of data range (e.g., datetime(2024, 4, 18)).</td>
+</tr>
+<tr>
+<td>interval</td>
+<td>string</td>
+<td>Timeframe for data (e.g., 1m, 60m, 1d)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="public-methods_3">Public Methods</h4>
+<p><code>fetch_yfinance_data()</code> : Fetches benchmark price data for the given symbol and date range using yfinance.</p>
+<h3 id="catching-strategy">Catching Strategy</h3>
+<h4 id="requests_cache"><code>requests_cache</code></h4>
+<ul>
+<li>Caches raw API responses on disk to minimize duplicate requests.</li>
+<li>Useful for paginated and repetitive queries.</li>
+<li>Used in fetching OHLC</li>
+</ul>
+<h4 id="joblib"><code>joblib</code></h4>
+<ul>
+<li>Caches processed DataFrames based on parameters (symbol, endpoint, start/end date, interval).</li>
+<li>Reduces recomputation for common queries.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+    
+  </body>
+</html>
