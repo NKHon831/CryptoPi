@@ -1,0 +1,12 @@
+site_name: CryptoPi Documentation
+nav:
+  - Modules:
+      - Home: home.md
+      - Portfolio: portfolio.md
+      - DataHandler: datahandler.md
+      - Strategy: strategy.md
+      - Execution: execution.md
+      - Model: model.md
+      - Performance: performance.md
+      - Visualisation: visualisation.md
+theme: material

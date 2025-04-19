@@ -1,10 +1,11 @@
+# python3 -m backtesting.datahandler 
+
 import pandas as pd
 import numpy as np
 import yfinance as yf
 import requests
 from datetime import datetime, timezone
 import os
-from dotenv import load_dotenv
 from functools import reduce
 from config import Config
 
@@ -13,10 +14,10 @@ class BaseDataHandler:
              symbol: str, 
              start_time: datetime, 
              end_time: datetime,
+             window: str,
              limit: int = 100000,
-             flatten: bool = True,
-             window: str = "hour"):
-        
+             flatten: bool = True):
+
         self.symbol = symbol
         self.start_dt = start_time
         self.end_dt = end_time
@@ -121,10 +122,10 @@ class RegimeModelData(BaseDataHandler):
                  symbol: str, 
                  start_time: datetime, 
                  end_time: datetime,
+                 window: str,
                  limit: int = 100000,
-                 flatten: bool = True,
-                 window: str = "hour"):
-        super().__init__(symbol, start_time, end_time, limit, flatten, window)
+                 flatten: bool = True,):
+        super().__init__(symbol, start_time, end_time, window, limit, flatten)
         # Automatically fetch the OHLC data when RegimeModelData is initialized
         self.fetch_binance_data()
 
@@ -254,8 +255,9 @@ class FinalAlphaModelData(BaseDataHandler):
             symbol: str, 
             start_time: datetime, 
             end_time: datetime, 
+            window: str,
             **kwargs):
-        super().__init__(symbol, start_time, end_time, **kwargs)
+        super().__init__(symbol, start_time, end_time, window, **kwargs)
         config = Config()
         self.api_key = config.CYBOTRADE_API_KEY
         self.base_url = "https://api.datasource.cybotrade.rs"
@@ -381,33 +383,77 @@ class FinalAlphaModelData(BaseDataHandler):
         self.processed_data = result
         return result
     
+class BenchmarkData:
+    def __init__(self, symbol: str, start_time: datetime, end_time: datetime, interval: str):
+        self.symbol = symbol
+        self.start_time = start_time
+        self.end_time = end_time
+        self.interval = interval
+
+    def fetch_yfinance_data(self):
+        btc = yf.download(
+            self.symbol,
+            start=self.start_time,
+            end=self.end_time,
+            interval=self.interval,
+            progress=False
+        )
+        btc = btc[['Close']].rename(columns={'Close': 'benchmark'})
+        btc.reset_index(inplace=True)
+        print(btc.head())
+        return btc
+
 # # OHLC only
-ohlc = BaseDataHandler(symbol='BTC-USD',
-                      start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
-                      end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
-                      window="1h")
-raw_ohlc = ohlc.raw_data
+# ohlc = BaseDataHandler(symbol='BTC-USD',
+#                       start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
+#                       end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
+#                       window="1h")
+# raw_ohlc = ohlc.raw_data
 # ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
 # print(raw_ohlc.tail)
 
-# # # Regime Model Data Frame
-regime_model = RegimeModelData(symbol='BTC-USD',
-                          start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
-                          end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
-                          window="1h")
-regime_model.preprocess()
-regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
+# # # # Regime Model Data Frame
+# regime_model = RegimeModelData(symbol='BTC-USD',
+#                           start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
+#                           end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
+#                           window="1h")
+# regime_model.preprocess()
+# regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
 # print(regime_model.processed_data.tail())
 
-# Test the FinalAlphaModel class
-model = FinalAlphaModelData(symbol='BTC',
-                          start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
-                          end_time=datetime(2020, 1, 5, tzinfo=timezone.utc),
-                          window="1h")
+# # Test the FinalAlphaModel class
+# model = FinalAlphaModelData(symbol='BTC',
+#                           start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
+#                           end_time=datetime(2020, 1, 5, tzinfo=timezone.utc),
+#                           window="24h")
 
-df = model.fetch_all_endpoints()
+# df = model.fetch_all_endpoints()
 # model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
 # print(df.head())
 
-# 1m 3m 5m 10m 15m 30m 1h 2h 4h 6h 12h 1d 3d 1w 1M -> intervals for olhc -> BaseDataHandler & RegimeModelData
-# 1h 24h -> intervals for glassnode -> FinalAlphaModelData
+# Benchmark Data
+benchmark = BenchmarkData(
+    symbol='BTC-USD',
+    start_time=datetime(2024, 3, 1),
+    end_time=datetime(2024, 4, 1),
+    interval='60m'
+)
+btc_data = benchmark.fetch_yfinance_data()
+
+'''
+Base Data & Regime Model Interval
+1m 3m 5m 10m 15m 30m 1h 2h 4h 6h 12h 1d 3d 1w 1M
+ 
+Final Alpha Model Interval
+1h 24h
+
+Benchmark Interval
+1m - Only available for last 7 days
+2m - Only available for last 60 days
+5m - Only available for last 60 days
+15m	- Only available for last 60 days
+30m	- Only available for last 60 days
+60m/1h	- Only available for last 730 days
+90m	- Only available for last 60 days
+1d 5d 1wk 1mo 3mo - Available for many years
+'''
