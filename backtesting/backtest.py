@@ -15,7 +15,7 @@ class BackTest:
         dataHandler : BaseDataHandler, 
         strategy : StrategyBase, 
         # portfolio : Portfolio = Portfolio(),
-        performance : PerformanceBase = PerformanceBase(),
+        # performance : PerformanceBase = PerformanceBase(),
         portfolioManager : PortfolioManager = PortfolioManager(),
         broker : BrokerBase = DefaultBroker()
     ):
@@ -23,7 +23,7 @@ class BackTest:
         self.strategy = strategy 
         self.portfolioManager = portfolioManager   
         self.broker = broker
-        self.performance = performance
+        # self.performance = performance
 
     def run(self):
         print("\nRunning backtest...")
