@@ -39,8 +39,8 @@ class MarketEntryType:
     SHORT = 'SHORT'
 
 class Direction:
-    LONG = 2
-    SHORT = 1
+    LONG = 1
+    SHORT = -1
     NEUTRAL = 0
 
 # class OrderExecutionStatus:

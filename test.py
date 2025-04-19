@@ -15,10 +15,10 @@ class Main:
         
         # predefined strategies for users
         moving_average_crossover_strategy = MovingAverageCrossoverStrategy(dataHandler.get_processed_data())
-            
-        # buy_and_hold_strategy = BuyAndHoldStrategy()
-        # momentum_strategy = MomentumStrategy(df_historical_data)
-        
+        buy_and_hold_strategy = BuyAndHoldStrategy()
+        momentum_strategy = MomentumStrategy(dataHandler.raw_data)
+        sample_strategy = SampleStrategy()
+
         backtest = BackTest(dataHandler, moving_average_crossover_strategy)
         backtest.run()
 

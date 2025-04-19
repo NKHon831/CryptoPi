@@ -28,6 +28,7 @@ class Portfolio:
         self.investment_rate = investment_rate
         self.shorting_preference = shorting_preference
         self.initial_capital = initial_capital
+        self.max_equity = 0.0
     
     def get_equity_value(self, market_price = 0.0):
         return self.wallet + self.holdings * market_price
@@ -95,4 +96,3 @@ class Portfolio:
         print("LONG: ", len(self.open_trades[MarketEntryType.LONG]))
         print("SHORT: ", len(self.open_trades[MarketEntryType.SHORT]))
         print('Closed trades:', len(self.closed_trades))
-

@@ -149,6 +149,16 @@ class PortfolioManager:
         } for trade in self.portfolio.get_closed_trades()]
 
         return closed_trades
+    
+
+    def get_max_drawdown(self):
+        max_drawdown = float('inf')
+
+        for position in self.portfolio.positions:
+            max_drawdown = min(max_drawdown, position.drawdown)
+
+        return max_drawdown
+
 
 
 
