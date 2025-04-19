@@ -7,6 +7,7 @@ from backtesting.execution.broker.brokers.DefaultBroker import DefaultBroker
 from backtesting.execution.broker.BrokerBase import BrokerBase
 from backtesting.portfolio.portfolio_manager import PortfolioManager
 from backtesting.performance.performance_base import PerformanceBase
+from backtesting.performance.performance_manager import PerformanceManager
 from backtesting.visualisation.visualisation import StrategyVisualisation
 
 class BackTest:
@@ -47,11 +48,15 @@ class BackTest:
 
         print("\nBacktest completed.")
 
-        # Pass closed_trades to performance
-        PerformanceBase.import_closed_trades(self.portfolioManager.export_closed_trades())
+        closed_trades = self.portfolioManager.export_closed_trades()
+        performance_manager = PerformanceManager(closed_trades, self.portfolioManager.portfolio.initial_capital)
+        scalar_metric, time_series_metric = performance_manager.get_metrics()
 
-        # Pass market data with signal for visualisation
-        StrategyVisualisation.import_market_data_with_trading_signal(self.dataHandler.get_processed_data())
+        # # Pass closed_trades to performance
+        # PerformanceBase.import_closed_trades(self.portfolioManager.export_closed_trades())
+
+        # # Pass market data with signal for visualisation
+        # StrategyVisualisation.import_market_data_with_trading_signal(self.dataHandler.get_processed_data())
 
         # Visualise porfolio stats
         print("\nPortfolio Overview:")

@@ -8,7 +8,8 @@ class Portfolio:
             holdings = 0.0, 
             wallet = 10000,
             investment_rate = 0.01, # 1% of the portfolio equity/wallet is used for each order
-            shorting_preference = 1 # All holdings is used for shorting / Assume short is just sell what we hold
+            shorting_preference = 1,
+            initial_capital = 10000 # All holdings is used for shorting / Assume short is just sell what we hold
         ):
         self.pending_orders  = []
         self.cancelled_orders = []
@@ -25,6 +26,7 @@ class Portfolio:
         self.equity = self.get_equity_value()
         self.investment_rate = investment_rate
         self.shorting_preference = shorting_preference
+        self.initial_capital = initial_capital
     
     def get_equity_value(self, market_price = 0.0):
         return self.wallet + self.holdings * market_price
