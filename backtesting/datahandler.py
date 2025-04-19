@@ -155,8 +155,11 @@ class RegimeModelData(BaseDataHandler):
                  limit: int = 100000,
                  flatten: bool = True,):
         super().__init__(symbol, start_time, end_time, window, limit, flatten)
+        start_str = str(start_time).replace(":", "-").replace(" ", "_")
+        end_str = str(end_time).replace(":", "-").replace(" ", "_")
+        filename = f"{symbol}_{window}_{start_str}_{end_str}.pkl"
         # Automatically fetch the OHLC data when RegimeModelData is initialized
-        cache_file = f"cache/processed/{symbol}_{window}_{start_time}_{end_time}.pkl"
+        cache_file = f"cache/processed/{filename}.pkl"
         start_timer = time.time()
         if os.path.exists(cache_file):
             print("📥 Loaded processed regime data from cache.")
@@ -378,7 +381,9 @@ class LogisticRegressionModelData(BaseDataHandler):
 
             # Format filename safely
             endpoint_str = endpoint.replace("/", "_")
-            cache_file = f"cache/endpoints/{self.symbol}_{self.window}_{self.start_dt}_{self.end_dt}_{endpoint_str}.pkl"
+            start_str = str(self.start_time).replace(":", "-").replace(" ", "_")
+            end_str = str(self.end_time).replace(":", "-").replace(" ", "_")
+            cache_file = f"cache/endpoints/{self.symbol}_{self.window}_{start_str}_{end_str}_{endpoint_str}.pkl"
 
             start_time_fetch = time.time()
 
@@ -499,18 +504,17 @@ def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=3600):
 #                         end_time=datetime(2025, 4, 13, tzinfo=timezone.utc),
 #                         window="1h")
 # regime_model.preprocess()
-# regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
 # print(regime_model.processed_data.tail())
 
 # # Test the FinalAlphaModel class
-# model = LogisticRegressionModelData(symbol='BTC',
-#                           start_time=datetime(2022, 12, 1, tzinfo=timezone.utc),
-#                           end_time=datetime(2023, 1, 4, tzinfo=timezone.utc),
-#                           window="24h")
+model = FinalAlphaModelData(symbol='BTC',
+                          start_time=datetime(2022, 12, 1, tzinfo=timezone.utc),
+                          end_time=datetime(2023, 1, 4, tzinfo=timezone.utc),
+                          window="24h")
 
-# df = model.fetch_all_endpoints()
-# model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
-# print(df.head())
+df = model.fetch_all_endpoints()
+model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
+print(df.head())
 
 # # Benchmark Data
 # benchmark = BenchmarkData(

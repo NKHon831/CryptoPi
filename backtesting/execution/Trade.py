@@ -1,6 +1,7 @@
 from backtesting.execution.Order import Order
 from backtesting.constants import TradeStatus
 from datetime import datetime
+from backtesting.constants import MarketEntryType, Signal
 
 class Trade:
     def __init__(
@@ -49,7 +50,7 @@ class Trade:
                     order.executed_price,
                     order.executed_date_time,
                     quantity if quantity is not None else order.quantity,
-                    order.market_entry_type,
+                    MarketEntryType.LONG if order.trading_signal is Signal.BUY else MarketEntryType.SHORT,
                     order.stop_loss_price,
                 )
 
