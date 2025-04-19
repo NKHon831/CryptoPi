@@ -6,7 +6,7 @@ from hmmlearn.hmm import GaussianHMM
 from sklearn.model_selection import TimeSeriesSplit
 from sklearn.preprocessing import StandardScaler
 from scipy.stats import mode
-from config import LOG_RETURN_THRESHOLD
+from .config import LOG_RETURN_THRESHOLD
 
 class MarketRegimeHMM:
     def __init__(self, n_states=3, features=None, covariance_type='full', n_iter=100, tol=1e-4, model_path_prefix=None):
