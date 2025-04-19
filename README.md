@@ -11,6 +11,7 @@
 ### Documentation:
 
 - [CryptoPi Official Documentation](https://nkhon831.github.io/CryptoPi/)
+- [CryptoPi Markdown Documentation](./cryptopi-docs/docs/)
 
 <!-- ## UM Hackathon 2025 Preliminary Round: 6thSense
 
