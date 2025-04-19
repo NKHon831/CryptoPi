@@ -2,12 +2,11 @@ import pandas as pd
 import numpy as np
 import yfinance as yf
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
+from functools import reduce
+from config import Config
 
 class BaseDataHandler:
     def __init__(self, 
@@ -17,6 +16,7 @@ class BaseDataHandler:
              limit: int = 100000,
              flatten: bool = True,
              window: str = "hour"):
+        
         self.symbol = symbol
         self.start_dt = start_time
         self.end_dt = end_time
@@ -31,44 +31,102 @@ class BaseDataHandler:
         # Data containers
         self.raw_data: pd.DataFrame = pd.DataFrame()
         self.processed_data: pd.DataFrame = pd.DataFrame()
+        self.fetch_binance_data()
 
     def convert_to_unix_ms(self, dt: datetime) -> int:
         return int(dt.timestamp() * 1000)
 
     def load_from_disc(self, path: str):
         self.raw_data = pd.read_csv(path)
-    
+
+    def fetch_binance_data(self):
+        config = Config("backtesting/.env")
+        api_key = config.CYBOTRADE_API_KEY
+        url = "https://api.datasource.cybotrade.rs/binance-linear/candle"
+        headers = {"X-api-key": api_key}
+
+        if self.window == "24h":
+            window = "1d"
+        else :
+            window = self.window
+
+        params = {
+            "symbol": "BTCUSDT",
+            "interval": window,
+            "start_time": self.start_time,
+            "end_time": self.end_time ,
+        }
+
+        try:
+            print(f"📡 Fetching: OHLC from Binance")
+            response = requests.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            data = response.json()
+
+            if 'data' not in data or not data['data']:
+                print("⚠️ No 'data' returned in response.")
+                return pd.DataFrame()
+
+            df = pd.json_normalize(data['data'])
+            # df.columns = [f"{endpoint}_{col}" for col in df.columns]
+
+            # Ensure required columns are present
+            expected_cols = ["start_time", "close", "high", "low", "open", "volume", ]
+            missing_cols = [col for col in expected_cols if col not in df.columns]
+            if missing_cols:
+                print(f"⚠️ Missing columns: {missing_cols}")
+
+            # Convert timestamp
+            df["start_time"] = pd.to_datetime(df["start_time"], unit="ms", utc=True)
+            df = df.rename(columns={"start_time": "timestamp"})
+            df.set_index("timestamp", inplace=True)
+
+            # Store results
+            self.raw_data = df
+            self.processed_data = df
+
+            print("✅ Binance candle data fetched and processed.")
+            return df
+
+        except requests.exceptions.RequestException as e:
+            print(f"❌ Request error: {e}")
+            return pd.DataFrame()
+        except Exception as e:
+            print(f"❌ Unexpected error: {e}")
+            return pd.DataFrame()
+        
     def get_processed_data(self) -> pd.DataFrame:
         return self.processed_data
 
-    def export(self, path: str):
-        # Save the processed data to the specified path with the symbol in the filename
-        self.processed_data.to_csv(f"{path}/{self.symbol}_data.csv")
-        print(f"Data exported to {path}/{self.symbol}_data.csv")
+    def export(self, path: str, filename: str):
+        # Ensure directory exists
+        os.makedirs(path, exist_ok=True)
+
+        # Add .csv extension if not present
+        if not filename.endswith(".csv"):
+            filename += ".csv"
+
+        # Construct full file path using just the filename
+        full_path = os.path.join(path, filename)
+
+        try:
+            self.processed_data.to_csv(full_path)
+            print(f"✅ Data exported to: {full_path}")
+        except Exception as e:
+            print(f"❌ Failed to export data: {e}")
 
 class RegimeModelData(BaseDataHandler):
-    def fetch_yfinance_data(self):
-        interval = self.window if self.window in ['1m', '2m', '5m', '15m', '30m', '1h', '90m', '1d'] else '1h'
-        data = yf.download(
-            self.symbol,
-            start=self.start_dt.strftime('%Y-%m-%d'),
-            end=self.end_dt.strftime('%Y-%m-%d'),
-            interval=interval,
-            progress=False
-        )
+    def __init__(self, 
+                 symbol: str, 
+                 start_time: datetime, 
+                 end_time: datetime,
+                 limit: int = 100000,
+                 flatten: bool = True,
+                 window: str = "hour"):
+        super().__init__(symbol, start_time, end_time, limit, flatten, window)
+        # Automatically fetch the OHLC data when RegimeModelData is initialized
+        self.fetch_binance_data()
 
-        data.rename(columns={
-            'Open': 'open', 
-            'High': 'high', 
-            'Low': 'low', 
-            'Close': 'close', 
-            'Adj Close': 'adj_close', 
-            'Volume': 'volume'
-        }, inplace=True)
-
-        data.dropna(inplace=True)
-        self.raw_data = data
-    
     def preprocess(self):
         df = self.raw_data
         df.sort_index(inplace=True)
@@ -123,7 +181,6 @@ class RegimeModelData(BaseDataHandler):
         macd_line = short_ema - long_ema
         signal_line = macd_line.ewm(span=signal_period, adjust=False).mean()
         return macd_line, signal_line
-
 
     # Volatility Indicator: ATR
     def compute_atr(self, df, period=14):
@@ -191,11 +248,19 @@ class RegimeModelData(BaseDataHandler):
         return (direction * df["volume"]).cumsum()
 
 class FinalAlphaModelData(BaseDataHandler):
-    def __init__(self, symbol, start_time, end_time, **kwargs):
+    def __init__(
+            self, 
+            symbol: str, 
+            start_time: datetime, 
+            end_time: datetime, 
+            **kwargs):
         super().__init__(symbol, start_time, end_time, **kwargs)
-        self.api_key = "" # os.getenv("CYBOTRADE_API_KEY") 
+        config = Config("backtesting/.env")
+        self.api_key = config.CYBOTRADE_API_KEY
         self.base_url = "https://api.datasource.cybotrade.rs"
         self.headers = {"X-api-key": self.api_key}
+
+        self.raw_data=self.fetch_binance_data()
 
         # Global parameters for most endpoints
         self.common_params = {
@@ -255,9 +320,6 @@ class FinalAlphaModelData(BaseDataHandler):
         }
 
     def fetch_all_endpoints(self):
-        import pandas as pd
-        from functools import reduce
-
         all_data = {}
         headers = {
             "X-Api-Key": self.api_key
@@ -268,9 +330,6 @@ class FinalAlphaModelData(BaseDataHandler):
             print(f"Fetching: /{endpoint}")
             url = f"{self.base_url}/{endpoint}"
             params = self.common_params.copy()
-
-            if custom_params:
-                params.update(custom_params)
 
             try:
                 response = requests.get(url, headers=headers, params=params)
@@ -308,35 +367,46 @@ class FinalAlphaModelData(BaseDataHandler):
             print("⚠️ No dataframes with a 'timestamp' column to merge.")
             combined_df = pd.DataFrame()
 
-        self.raw_data = combined_df
         self.processed_data = combined_df
 
         # Convert timestamp to datetime
         if "timestamp" in self.processed_data.columns:
-            self.processed_data["timestamp"] = pd.to_datetime(self.processed_data["timestamp"], unit="ms")
+            self.processed_data["timestamp"] = pd.to_datetime(self.processed_data["timestamp"], unit="ms", utc=True)
             print("✅ Timestamp column converted to datetime.")
         else:
             print("⚠️ 'timestamp' column not found in processed_data.")
 
-        return combined_df  
- 
-# Test the RegimeModelData class
-# handler = RegimeModelData(symbol='BTC-USD',
-#                           start_time=datetime(2025, 1, 1),
-#                           end_time=datetime(2025, 4, 16),
-#                           window="hour")
-# handler.fetch_yfinance_data()
-# handler.preprocess()
-# handler.export("/Users/pohsharon/Downloads/UMH")
-# print(handler.processed_data.tail())
+        result = pd.merge(self.raw_data, combined_df, left_on='timestamp', right_on='timestamp', how='outer')
+        self.processed_data = result
+        return result
+    
+# # OHLC only
+ohlc = BaseDataHandler(symbol='BTC-USD',
+                      start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
+                      end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
+                      window="1h")
+raw_ohlc = ohlc.raw_data
+ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
+print(raw_ohlc.tail)
+
+# # # Regime Model Data Frame
+regime_model = RegimeModelData(symbol='BTC-USD',
+                          start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
+                          end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
+                          window="1h")
+regime_model.preprocess()
+regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
+print(regime_model.processed_data.tail())
 
 # Test the FinalAlphaModel class
 model = FinalAlphaModelData(symbol='BTC',
-                          start_time=datetime(2025, 1, 1),
-                          end_time=datetime(2025, 1, 3),
+                          start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
+                          end_time=datetime(2020, 1, 5, tzinfo=timezone.utc),
                           window="1h")
 
 df = model.fetch_all_endpoints()
-model.export("/Users/pohsharon/Downloads/UMH") # Change path to your desired export path
+model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
 print(df.head())
 
+# 1m 3m 5m 10m 15m 30m 1h 2h 4h 6h 12h 1d 3d 1w 1M -> intervals for olhc -> BaseDataHandler & RegimeModelData
+# 1h 24h -> intervals for glassnode -> FinalAlphaModelData
