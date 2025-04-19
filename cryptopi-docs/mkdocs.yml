@@ -1,0 +1,15 @@
+site_name: CryptoPi Documentation
+nav:
+  - Modules:
+      - Home: index.md
+      - Portfolio: portfolio.md
+      - DataHandler: datahandler.md
+      - Strategy: strategy.md
+      - Execution: execution.md
+      - Model:
+          #   - SentimentAnalysisModel: sentiment.md
+          - RegimeDetectionModel: regime.md
+          - AlphaModel: alpha.md
+      - Performance: performance.md
+      - Visualisation: visualisation.md
+theme: material

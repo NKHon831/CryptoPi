@@ -1,8 +1,10 @@
-class StrategyBase:
-    def __init__(self):
-        pass
+from datetime import datetime
 
-    def generate_trading_signal(data):
+class StrategyBase:
+    def __init__(self, df_historical_data = None):
+        self.df_historical_data = df_historical_data
+
+    def generate_trading_signal(data, datetime : datetime= None, index = 0):
         # Allow trader to define their own trading strategy logic
         pass
     

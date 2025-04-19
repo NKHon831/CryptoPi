@@ -2,8 +2,8 @@
 # execute whole workflow of sentiment analysis model
 
 from .data import news_retrieval, smposts_retrieval
-from models.sentiment import clean_text
-from models.sentiment import analyse
+from backtesting.models.sentiment import clean_text
+from backtesting.models.sentiment import analyse
 import json
 import os
 

@@ -3,6 +3,15 @@ class Signal:
     SELL = 'SELL'
     HOLD = 'HOLD'
     TRADING_SIGNALS = [ BUY , SELL ]
+    SIGNALS = {
+        BUY : 1,
+        SELL : -1,
+        HOLD : 0
+    }
+
+    @staticmethod
+    def map_to_binary(trading_signal):
+        return Signal.SIGNALS.get(trading_signal)
 
 class ExecutionType:
     OPEN = 'OPEN'
@@ -16,11 +25,29 @@ class ExecutionInterval:
     DAY = 'DAY'
     WEEK = 'WEEK'
 
-class OrderExecutionStatus:
-    OPEN = 'OPEN' 
+class OrderStatus:
+    PENDING = 'PENDING'
+    EXECUTED = 'EXECUTED'
+    CANCELLED = 'CANCELLED'
+
+class TradeStatus:
+    OPEN = 'OPEN'
     CLOSED = 'CLOSED'
-    FAILED = 'FAILED'
-    SUCCESS = [ OPEN , CLOSED]
+ 
+class MarketEntryType:
+    LONG = 'LONG'
+    SHORT = 'SHORT'
+
+class Direction:
+    LONG = 1
+    SHORT = -1
+    NEUTRAL = 0
+
+# class OrderExecutionStatus:
+#     OPEN = 'OPEN' 
+#     CLOSED = 'CLOSED'
+#     FAILED = 'FAILED'
+#     SUCCESS = [ OPEN , CLOSED]
 
 
 
