@@ -6,6 +6,10 @@
 
 - [Canva](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7)
 
+#### Documentation:
+
+- [CryptoPi Official Documentation](https://nkhon831.github.io/CryptoPi/)
+
 <!-- ## UM Hackathon 2025 Preliminary Round: 6thSense
 
 ### Submission:
@@ -23,8 +27,9 @@
 
 # CryptoPi: Built for Crypto. Powered by Intelligence.
 
-CryptoPi is a proposed Python library tailored for the **UM Hackathon 2025 – Balaena Quant Challenge (Domain 2)**. Our solution directly addresses the challenge of building robust alpha-generating trading strategies using Machine Learning (ML) on **on-chain crypto data**.
-[Click here to view our pitch deck.](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7)
+CryptoPi is a Python library tailored for the **UM Hackathon 2025 – Balaena Quant Challenge (Domain 2)**. Our solution directly addresses the challenge of building robust alpha-generating trading strategies using Machine Learning (ML) on **on-chain crypto data**.
+
+Explore the full documentation [here](https://nkhon831.github.io/CryptoPi/) to get started.
 
 ## Problem Statement
 
@@ -46,13 +51,28 @@ We propose a model-centric backtesting library built for the crypto domain, crea
 2. **Smart Caching Layer**: CryptoPi implements a smart caching mechanism that stores intermediate results such as preprocessed datasets, extracted features, and model outputs. This dramatically reduces redundant computation, allowing faster experimentation by reusing previously computed results for similar runs or parameter sets.
 3. **Versioning & Reproducibility**: Every backtest run in CryptoPi is automatically versioned. This includes metadata such as dataset versions, model parameters, strategy configurations, and performance metrics. It ensures that experiments are transparent, traceable, and fully reproducible—crucial for maintaining research integrity and enabling enterprise-grade auditability.
 
-## Prototype
+<!-- ## Prototype
 
-Please refer to our pitching deck [here](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7) for more detailed prototype design illustrated through different diagrams and figures. You can also refer to our Lucidchart [here](https://lucid.app/lucidchart/95860ad1-6bf8-45e8-9e23-ed220dede91e/edit?viewport_loc=5154%2C-1194%2C3409%2C1417%2Cf~U95iUYWTq-&invitationId=inv_282566a2-a946-4eab-b096-b330419bc219) for the prototype diagrams.
+Please refer to our pitching deck [here](https://www.canva.com/design/DAGkVzm-wM8/OcP3ndDx7Df2SLinLGI8Ig/view?utm_content=DAGkVzm-wM8&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h6ab8f98cd7) for more detailed prototype design illustrated through different diagrams and figures. You can also refer to our Lucidchart [here](https://lucid.app/lucidchart/95860ad1-6bf8-45e8-9e23-ed220dede91e/edit?viewport_loc=5154%2C-1194%2C3409%2C1417%2Cf~U95iUYWTq-&invitationId=inv_282566a2-a946-4eab-b096-b330419bc219) for the prototype diagrams. -->
 
-### Conceptual Architecture Diagram:
+<!-- ### Conceptual Architecture Diagram:
 
-<img src="assets\conceptual_architecture_diagram.png" alt="Conceptual Architecture Diagram" width="900"/>
+<img src="assets\conceptual_architecture_diagram.png" alt="Conceptual Architecture Diagram" width="900"/> -->
+
+## Model Selections
+
+1. **Regime Detection Model - Hidden Markov Model (HMM)**: The HMM was selected for its strengths in modeling temporal patterns in market behavior:
+
+- 🔍 Captures Hidden Market States: Effectively identifies latent regimes such as bull, bear, or sideways trends.
+- 🎲 Probabilistic Transitions: Models regime shifts with realistic probabilities, useful for dynamic environments.
+- 🪶 Lightweight & Efficient: Offers a favorable trade-off between computational cost and accuracy, suitable for scalable or resource-constrained pipelines.
+
+2. **Alpha Model - Logistic Regression**: Logistic Regression was chosen for its balance of simplicity, speed, and reliability:
+
+- 🔐 Robust with Limited Data: Performs well even with smaller datasets, avoiding overfitting.
+- 📊 Probabilistic Outputs: Generates interpretable signal confidence levels to guide position sizing.
+- 🔍 Interpretability: Clear feature importance makes it easier to audit and refine strategies.
+- ⚡ Fast Inference Time: Low latency makes it ideal for real-time trade signal generation.
 
 ## Impacts
 
@@ -60,12 +80,26 @@ Please refer to our pitching deck [here](https://www.canva.com/design/DAGkVzm-wM
 2. 🌍 **Increased Accessibility**: CryptoPi lowers the barrier to entry for algorithmic trading. With intuitive visualizations, a modular plug-and-play design, and support for pretrained models, even users without deep coding expertise can explore, test, and understand sophisticated strategies.
 3. 📊 **Data-Driven Decision Making**: CryptoPi promotes confidence through data. By providing transparent and reproducible metrics on strategy performance, users can rely on clear, quantitative insights instead of gut feelings—ultimately reducing emotional or impulsive trading decisions.
 
+## Model Performance
+
+1. **Sharpe Ratio (SR)** >= 1.8
+
+   Indicates strong risk-adjusted returns, suggesting the strategy generates significantly more return per unit of volatility than a passive benchmark.
+
+2. **Max Drawdown (MDD)** > -30%
+
+   Maintains capital preservation with acceptable downside risk, ensuring the strategy avoids catastrophic losses during adverse market conditions.
+
+3. **Trade Frequency** >= 3%
+
+   Balances between overtrading and undertrading by maintaining a healthy level of trading activity, enabling sufficient market participation without excessive noise.
+
 ## Future Improvements
 
 1. 🟢 **Live Trading & Real-Time Simulation**: Integrate real-time market data and execute strategies live, with support for simulation in fast-forward mode. This will bridge the gap between research and deployment.
-2. 🎛️ **Visual Strategy Builder**: A drag-and-drop UI for building, editing, and visualizing trading logic—no coding required. This will democratize strategy creation for non-technical users and accelerate rapid prototyping for technical ones.
-3. 🤖 **AutoML Pipeline with Online Learning**: Automatically select, train, and fine-tune models using live feedback from market data. This will enable adaptive strategies that learn and evolve in real time, reducing the need for constant manual retraining.
-4. 🧠 **Reinforcement Learning Strategies**: Introduce reinforcement learning agents that can learn optimal trading policies through trial-and-error in simulated or real environments. This will unlock next-generation strategies that go beyond predefined rules or supervised learning.
+2. ⚙️ **Model Enhancement & Finetuning**: Upgrade models to more advanced architectures and apply dynamic finetuning strategies for improved signal accuracy and robustness.
+3. 🧠 **Multi-Modal Fusion**: Combine sentiment, technical, fundamental, and on-chain data using advanced fusion techniques to capture richer market insights.
+4. 📊 **Data & Feature Engineering**: Engineer more alpha-rich features and apply real-time pipelines to adapt quickly to changing market conditions.
 
 ## Our Team: **6thSense**
 
