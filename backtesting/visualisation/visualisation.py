@@ -1,56 +1,20 @@
 import plotly.graph_objects as go
 import pandas as pd
 import os
+from backtesting.visualisation.tools import match_portfolio_market_data
 
-class MarketVisualisation:
-  def __init__(self, market_data):
+class Visualisation():
+  def __init__(self, performance_data, performance_metrics, market_data):
     self.market_data = market_data
-    self.charts = {}
-
-  def plot_price_chart(self, title='BTC-USD Price Chart'):
-    df = self.market_data.copy()
-    
-    fig = go.Figure(data=[go.Candlestick(
-    x=df['datetime'],
-    open=df['open'],
-    high=df['high'],
-    low=df['low'],
-    close=df['close'],
-    name=title,
-    showlegend=True
-    )])
-
-    fig.update_layout(
-      title=title,
-      xaxis_title='Date',
-      yaxis_title='Price (k USD/ BTC)',
-      xaxis_rangeslider_visible=True
-      )
-    
-    self.charts["Price Chart"] = fig
-    print("Price Chart created and added to charts list.")
-
-    return fig
-  
-class StrategyVisualisation(MarketVisualisation):
-
-  market_data_with_trading_signal = None
-
-  def __init__(self, performance_data, performance_metrics, market_data=None):
-    self.market_data = None
     self.performance_data = performance_data
     self.performance_metrics = performance_metrics
     self.chart_mapping = {
       "Equity Curve": self.plot_equity_curve,
       "Performance Metrics": self.tabulate_metrics,
       "Daily Returns": self.plot_daily_returns,
-      # "Price Chart with Signals": self.plot_price_with_signals
+      "Price Chart": self.plot_price
     }
     self.charts = {}
-    if market_data is not None:
-      self.market_data = market_data
-      super().__init__(market_data)
-      self.chart_mapping["Price Chart"] = self.plot_price_chart
   
   def plot_equity_curve(self, title="Equity Curve"):
     fig = go.Figure()
@@ -137,65 +101,50 @@ class StrategyVisualisation(MarketVisualisation):
 
     return fig
 
-  def plot_price_with_signals(self, title="Price Chart with Signals", simple_plot_only=False):
-    fig = go.Figure()
+  def plot_price(self, title="Price Chart", with_signals=True):
+    df = self.market_data.copy()
+    df['datetime'] = df.index
+    
+    fig = go.Figure(data=[go.Candlestick(
+      x=df['datetime'],
+      open=df['open'],
+      high=df['high'],
+      low=df['low'],
+      close=df['close'],
+      name=title,
+      showlegend=True
+    )])
 
-    if hasattr(self, 'market_data') and self.market_data is not None and not simple_plot_only:
-      # Use market data if available for more detailed visualisation
-      df_market = self.market_data.copy()
-      df_market['datetime'] = pd.to_datetime(df_market['datetime'])
+    if with_signals:
+      trading_signals = df['trading_signal']
+      buy_signals = df[trading_signals == 1]
+      sell_signals = df[trading_signals == -1]
 
-      fig.add_trace(go.Candlestick(
-        x=df_market['datetime'],
-        open=df_market['open'],
-        high=df_market['high'],
-        low=df_market['low'],
-        close=df_market['close'],
-        name='OHLC'
-      ))
-    else:
-      df = self.performance_data.copy()
-      df['datetime'] = pd.to_datetime(df['datetime'])
       fig.add_trace(go.Scatter(
-        x=df['datetime'],
-        y=df['price'],
-        mode='lines',
-        name='Price',
-        line=dict(color='blue')
-      ))
+        x=buy_signals['datetime'],
+        y=buy_signals['close'],
+        mode='markers',
+        name='Buy Signal',
+        marker=dict(symbol='triangle-up', color='green', size=10)
+        ))
 
-    df_signals = self.performance_data.copy()
-
-    # Buy signal markers
-    buy_df = df_signals[df_signals['buy_signal'] == 1]
-    fig.add_trace(go.Scatter(
-      x=buy_df['datetime'],
-      y=buy_df['price'],
-      mode='markers',
-      name='Buy Signal',
-      marker=dict(symbol='triangle-up', color='green', size=10)
-    ))
-
-    # Sell signal markers
-    sell_df = df_signals[df_signals['sell_signal'] == 1]
-    fig.add_trace(go.Scatter(
-      x=sell_df['datetime'],
-      y=sell_df['price'],
-      mode='markers',
-      name='Sell Signal',
-      marker=dict(symbol='triangle-down', color='red', size=10)
-    ))
+      fig.add_trace(go.Scatter(
+        x=sell_signals['datetime'],
+        y=sell_signals['close'],
+        mode='markers',
+        name='Sell Signal',
+        marker=dict(symbol='triangle-down', color='red', size=10)
+        ))
 
     fig.update_layout(
       title=title,
       xaxis_title='Date',
       yaxis_title='Price (k USD/ BTC)',
-      template='plotly_white',
-      legend=dict(x=0, y=1)
-    )
+      xaxis_rangeslider_visible=True
+      )
 
-    self.charts["Price Chart with Signals"] = fig
-    print("Price Chart With Signals created and added to charts list.")
+    self.charts["Price Chart"] = fig
+    print("Price Chart created and added to charts list.")
 
     return fig
 
@@ -248,16 +197,3 @@ class StrategyVisualisation(MarketVisualisation):
         fig.write_json(filepath)
 
     print(f"✅ Exported {len(target_charts)} chart(s) to '{export_dir}/' as {format.upper()}")
-
-  def load_market_data(self, market_data):
-    if self.market_data is not None:
-      print("Market data already loaded. Reloading is not supported.")
-      return
-    
-    self.market_data = market_data
-    super().__init__(market_data)
-    self.chart_mapping["Price Chart"] = self.plot_price_chart
-
-  @staticmethod
-  def import_market_data_with_trading_signal(market_data_with_trading_signal):
-    StrategyVisualisation.market_data_with_trading_signal = market_data_with_trading_signal

@@ -1,4 +1,9 @@
 # python3 -m backtesting.datahandler 
+# Caching strategy:
+# - requests_cache: caches raw API HTTP responses
+# - joblib: caches the final merged + processed DataFrame
+# - unique filenames ensure different parameter combinations don’t overwrite each other
+
 
 import pandas as pd
 import numpy as np
@@ -8,6 +13,12 @@ from datetime import datetime, timezone
 import os
 from functools import reduce
 from config import Config
+from functools import lru_cache
+import requests
+import requests_cache
+import time
+import os
+import joblib
 
 class BaseDataHandler:
     def __init__(self, 
@@ -29,6 +40,8 @@ class BaseDataHandler:
         self.flatten = flatten
         self.window = window
 
+        # self.l1_cache = L1Cache(ttl_seconds=3600)
+
         # Data containers
         self.raw_data: pd.DataFrame = pd.DataFrame()
         self.processed_data: pd.DataFrame = pd.DataFrame()
@@ -40,16 +53,20 @@ class BaseDataHandler:
     def load_from_disc(self, path: str):
         self.raw_data = pd.read_csv(path)
 
+    def _generate_cache_key(self):
+        return (self.window, self.start_time, self.end_time)
+    
+    def _get_cache_key(self):
+        return f"{self.symbol}_{self.window}_{self.start_time}_{self.end_time}"
+
     def fetch_binance_data(self):
+        requests_cache.install_cache('api_cache', expire_after=3600)
         config = Config()
         api_key = config.CYBOTRADE_API_KEY
         url = "https://api.datasource.cybotrade.rs/binance-linear/candle"
         headers = {"X-api-key": api_key}
 
-        if self.window == "24h":
-            window = "1d"
-        else :
-            window = self.window
+        window = "1d" if self.window == "24h" else self.window
 
         params = {
             "symbol": "BTCUSDT",
@@ -58,10 +75,24 @@ class BaseDataHandler:
             "end_time": self.end_time ,
         }
 
+        # Check if the request is already cached
         try:
-            # print(f"📡 Fetching: OHLC from Binance")
-            response = requests.get(url, headers=headers, params=params)
+            # Fetching data from the API
+            session = requests_cache.CachedSession('api_cache', expire_after=3600)
+            start=time.time()
+            response = session.get(url, headers=headers, params=params)
+            print(f"⏱️ Binance Data Duration: {time.time() - start:.4f}s")
+            
+            # Check if the data was fetched from the cache
+            if response.from_cache:
+                print("✅ Binance Data fetched from cache!")
+            else:
+                print("📡 Binance Data fetched from API!")
+
+            # Check for errors in the response
+            
             response.raise_for_status()
+
             data = response.json()
 
             if 'data' not in data or not data['data']:
@@ -69,7 +100,6 @@ class BaseDataHandler:
                 return pd.DataFrame()
 
             df = pd.json_normalize(data['data'])
-            # df.columns = [f"{endpoint}_{col}" for col in df.columns]
 
             # Ensure required columns are present
             expected_cols = ["start_time", "close", "high", "low", "open", "volume", ]
@@ -83,11 +113,9 @@ class BaseDataHandler:
             df = df.rename(columns={"start_time": "timestamp"})
             df.set_index("timestamp", inplace=True)
 
-            # Store results
             self.raw_data = df
             self.processed_data = df
 
-            # print("✅ Binance candle data fetched and processed.")
             return df
 
         except requests.exceptions.RequestException as e:
@@ -113,7 +141,7 @@ class BaseDataHandler:
 
         try:
             self.processed_data.to_csv(full_path)
-            # print(f"✅ Data exported to: {full_path}")
+            print(f"✅ Binance Data exported to: {full_path}")
         except Exception as e:
             print(f"❌ Failed to export data: {e}")
 
@@ -127,7 +155,21 @@ class RegimeModelData(BaseDataHandler):
                  flatten: bool = True,):
         super().__init__(symbol, start_time, end_time, window, limit, flatten)
         # Automatically fetch the OHLC data when RegimeModelData is initialized
-        self.fetch_binance_data()
+        cache_file = f"cache/processed/{symbol}_{window}_{start_time}_{end_time}.pkl"
+        start_timer = time.time()
+        if os.path.exists(cache_file):
+            print("📥 Loaded processed regime data from cache.")
+            clean_old_cache(cache_dir="cache/processed", max_age_seconds=60*60*24)
+            self.processed_data = joblib.load(cache_file)
+        else:
+            # self.fetch_binance_data()
+            self.preprocess()
+            os.makedirs(os.path.dirname(cache_file), exist_ok=True)
+            joblib.dump(self.processed_data, cache_file)
+            print("ℹ️ Saved processed regime data to cache.")
+
+        end_timer = time.time()
+        print(f"⏱️ RegimeModelData duration: {end_timer - start_timer:.4f}s")
 
     def preprocess(self):
         df = self.raw_data
@@ -263,8 +305,6 @@ class FinalAlphaModelData(BaseDataHandler):
         self.base_url = "https://api.datasource.cybotrade.rs"
         self.headers = {"X-api-key": self.api_key}
 
-        self.raw_data=self.fetch_binance_data()
-
         # Global parameters for most endpoints
         self.common_params = {
             "a": symbol,
@@ -276,10 +316,10 @@ class FinalAlphaModelData(BaseDataHandler):
         # Endpoint-specific configuration
         self.endpoint_config = {
             "glassnode/addresses/min_10k_count": {}, # add_10_k
-            "glassnode/addresses/min_100_count": {}, # add_100_btc
-            "glassnode/addresses/new_non_zero_count": {}, # new_adds
-            # "glassnode/addresses/accumulation_count": {}, # new_adds
-            # "glassnode/addresses/count": {}, # total_adds
+            # "glassnode/addresses/min_100_count": {}, # add_100_btc
+            # "glassnode/addresses/new_non_zero_count": {}, # new_adds
+            "glassnode/addresses/accumulation_count": {}, # new_adds
+            "glassnode/addresses/count": {}, # total_adds
             # "glassnode/supply/active_more_1y_percent": {}, # s_last_act_1y
             # "glassnode/blockchain/block_count": {}, # blocks_mined
             # "glassnode/mining/hash_rate_mean": {}, # hash_rate
@@ -323,6 +363,7 @@ class FinalAlphaModelData(BaseDataHandler):
         }
 
     def fetch_all_endpoints(self):
+        clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=60 * 60 * 24)  # e.g., delete after 24 hours
         all_data = {}
         headers = {
             "X-Api-Key": self.api_key
@@ -332,29 +373,49 @@ class FinalAlphaModelData(BaseDataHandler):
         for endpoint, custom_params in self.endpoint_config.items():
             # print(f"Fetching: /{endpoint}")
             url = f"{self.base_url}/{endpoint}"
-            params = self.common_params.copy()
+            params = self.common_params
+
+            # Format filename safely
+            endpoint_str = endpoint.replace("/", "_")
+            cache_file = f"cache/endpoints/{self.symbol}_{self.window}_{self.start_dt}_{self.end_dt}_{endpoint_str}.pkl"
+
+            start_time_fetch = time.time()
 
             try:
+                if os.path.exists(cache_file):
+                    print(f"📦 Loaded from cache")
+                    data = joblib.load(cache_file)
+
+                    if 'data' not in data or not data['data']:
+                        print(f"⚠️ Cached file is invalid or empty. Deleting and refetching...")
+                        os.remove(cache_file)
+                        raise ValueError("Invalid cache")
+                else:
+                    raise FileNotFoundError()
+
+            except (ValueError, FileNotFoundError):
+                print(f"🌐 Fetching from API: {endpoint}")
                 response = requests.get(url, headers=headers, params=params)
                 response.raise_for_status()
                 data = response.json()
 
                 if 'data' not in data or not data['data']:
-                    raise ValueError("Empty or missing 'data' field in response")
+                    raise ValueError("Empty or invalid API response")
+                
+                os.makedirs(os.path.dirname(cache_file), exist_ok=True)
+                joblib.dump(data, cache_file)
 
-                df = pd.json_normalize(data['data'])
-                df.columns = [f"{endpoint}_{col}" for col in df.columns]
+            df = pd.json_normalize(data['data'])
+            df.columns = [f"{endpoint}_{col}" for col in df.columns]
 
-                # Rename timestamp column if possible
-                timestamp_col = next((col for col in df.columns if col.endswith("start_time")), None)
-                if timestamp_col:
-                    df.rename(columns={timestamp_col: "timestamp"}, inplace=True)
+            timestamp_col = next((col for col in df.columns if col.endswith("start_time")), None)
+            if timestamp_col:
+                df.rename(columns={timestamp_col: "timestamp"}, inplace=True)
 
-                all_data[endpoint] = df
+            all_data[endpoint] = df
 
-            except Exception as e:
-                print(f"❌ Error fetching /{endpoint}: {e}")
-                all_data[endpoint] = pd.DataFrame()
+            duration = time.time() - start_time_fetch  # ⏱️ End timing
+            print(f"⏱️ Duration for {endpoint}: {duration:.2f} seconds\n")
 
         # Filter only DataFrames with 'timestamp'
         dataframes = [df for df in all_data.values() if "timestamp" in df.columns]
@@ -380,6 +441,7 @@ class FinalAlphaModelData(BaseDataHandler):
             print("⚠️ 'timestamp' column not found in processed_data.")
 
         result = pd.merge(self.raw_data, combined_df, left_on='timestamp', right_on='timestamp', how='outer')
+        result["log_returns"] = np.log(result["close"] / result["close"].shift(1))
         self.processed_data = result
         return result
     
@@ -402,29 +464,56 @@ class BenchmarkData:
         btc.reset_index(inplace=True)
         print(btc.head())
         return btc
+    
+def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=60 * 60 * 24):
+    """
+    Deletes cache files older than max_age_seconds from the specified cache directory.
+    """
+    current_time = time.time()
+
+    # Loop through files in the cache directory
+    for root, dirs, files in os.walk(cache_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+
+            # Check if the file is older than the specified max age
+            file_age = current_time - os.path.getmtime(file_path)
+
+            if file_age > max_age_seconds:
+                print(f"Deleting old cache file: {file_path}")
+                os.remove(file_path)
 
 # # OHLC only
 # ohlc = BaseDataHandler(symbol='BTC-USD',
-#                       start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
-#                       end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
+#                       start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
+#                       end_time=datetime(2025, 4, 1, tzinfo=timezone.utc),
 #                       window="1h")
 # raw_ohlc = ohlc.raw_data
-# ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
+# # ohlc.export("/Users/pohsharon/Downloads/UMH", "ohlc") # Change path to your desired export path
 # print(raw_ohlc.tail)
 
-# # # # Regime Model Data Frame
-# regime_model = RegimeModelData(symbol='BTC-USD',
-#                           start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
-#                           end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
-#                           window="1h")
-# regime_model.preprocess()
-# regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
-# print(regime_model.processed_data.tail())
+# Regime Model Data Frame
+regime_model = RegimeModelData(symbol='BTC-USD',
+                        start_time=datetime(2024, 3, 1, tzinfo=timezone.utc),
+                        end_time=datetime(2025, 4, 13, tzinfo=timezone.utc),
+                        window="1h")
+regime_model.preprocess()
+regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
+print(regime_model.processed_data.tail())
+
+regime_model = RegimeModelData(symbol='BTC-USD',
+                        start_time=datetime(2025, 3, 1, tzinfo=timezone.utc),
+                        end_time=datetime(2025, 4, 13, tzinfo=timezone.utc),
+                        window="1h")
+regime_model.preprocess()
+regime_model.export("/Users/pohsharon/Downloads/UMH", "regime_model") # Change path to your desired export path
+print(regime_model.processed_data.tail())
+
 
 # # Test the FinalAlphaModel class
 # model = FinalAlphaModelData(symbol='BTC',
-#                           start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
-#                           end_time=datetime(2020, 1, 5, tzinfo=timezone.utc),
+#                           start_time=datetime(2022, 12, 1, tzinfo=timezone.utc),
+#                           end_time=datetime(2023, 1, 4, tzinfo=timezone.utc),
 #                           window="24h")
 
 # df = model.fetch_all_endpoints()
@@ -432,13 +521,13 @@ class BenchmarkData:
 # print(df.head())
 
 # Benchmark Data
-benchmark = BenchmarkData(
-    symbol='BTC-USD',
-    start_time=datetime(2024, 3, 1),
-    end_time=datetime(2024, 4, 1),
-    interval='60m'
-)
-btc_data = benchmark.fetch_yfinance_data()
+# benchmark = BenchmarkData(
+#     symbol='BTC-USD',
+#     start_time=datetime(2024, 3, 1),
+#     end_time=datetime(2024, 4, 1),
+#     interval='60m'
+# )
+# btc_data = benchmark.fetch_yfinance_data()
 
 '''
 Base Data & Regime Model Interval
