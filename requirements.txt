@@ -19,3 +19,5 @@ plotly==6.0.1
 yfinance==0.2.55
 numpy==2.2.4
 scikit-learn==1.6.1
+mkdocs==1.6.1
+mkdocs-material==9.6.12
