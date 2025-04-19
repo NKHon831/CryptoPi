@@ -20,7 +20,8 @@ class Portfolio:
         }
         self.closed_trades = []
         self.performance = None # Implement performance evaluation
-        self.position = None # Dont support position yet
+        self.positions = []
+
         self.wallet = wallet
         self.holdings = holdings
         self.equity = self.get_equity_value()
@@ -51,6 +52,7 @@ class Portfolio:
         self.cancelled_orders.append(cancelled_order)
 
     def add_open_trade(self, trade : Trade):
+        print("Trade: ", trade)
         self.open_trades[trade.market_entry_type].append(trade)
     
     def add_closed_trade(self, closed_trade : Trade):
@@ -84,6 +86,9 @@ class Portfolio:
     def get_all_trades(self):
         return (self.open_trades[MarketEntryType.LONG] + self.open_trades[MarketEntryType.SHORT] + self.closed_trades)    
 
+    def get_positions(self):
+        return self.positions
+    
     def overview(self):
         print("Wallet: ", self.wallet)
         print("Holdings: ", self.holdings)

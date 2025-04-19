@@ -1,8 +1,9 @@
 from backtesting.portfolio.portfolio import Portfolio
 from backtesting.execution.Order import Order
 from backtesting.execution.Trade import Trade
-from backtesting.constants import MarketEntryType, TradeStatus, Signal
+from backtesting.constants import MarketEntryType, TradeStatus, Signal, Direction
 import copy
+from backtesting.portfolio.position import Position
 import pandas as pd
 
 class PortfolioManager:
@@ -29,32 +30,31 @@ class PortfolioManager:
         executed_orders : list[Order] = orders['executed_orders']
         cancelled_orders : list[Order] = orders['cancelled_orders']
 
-        for order in executed_orders: 
-            match order.market_entry_type:
-                case MarketEntryType.LONG:
+        for order in executed_orders:
+            match order.trading_signal:
+                case Signal.BUY:
                     self.portfolio.wallet -= order.quantity * order.executed_price
                     self.portfolio.holdings += order.quantity
-                case MarketEntryType.SHORT:
+                case Signal.SELL:
                     self.portfolio.wallet += order.quantity * order.executed_price
                     self.portfolio.holdings -= order.quantity
                 case _:
                     pass
-
+            
         self.portfolio.add_executed_orders(executed_orders)
         self.portfolio.add_cancelled_orders(cancelled_orders)
 
         self.update_trades(executed_orders)
 
     def update_trades(self, executed_orders : list[Order]):
-
         for order in executed_orders:
             # Order is closing an open short trade
-            if(order.market_entry_type is MarketEntryType.LONG and self.portfolio.has_open_trades(MarketEntryType.SHORT)):
+            if(order.trading_signal is Signal.BUY and self.portfolio.has_open_trades(MarketEntryType.SHORT)):
                 short_open_trades = self.portfolio.get_open_trades()[MarketEntryType.SHORT]
                 self.closing_trade(order, short_open_trades)
 
             # Order is closing an open long trade
-            elif(order.market_entry_type is MarketEntryType.SHORT and self.portfolio.has_open_trades(MarketEntryType.LONG)):
+            elif(order.trading_signal is Signal.SELL and self.portfolio.has_open_trades(MarketEntryType.LONG)):
                 long_open_trades = self.portfolio.get_open_trades()[MarketEntryType.LONG]
                 self.closing_trade(order, long_open_trades)
             
@@ -129,7 +129,11 @@ class PortfolioManager:
 
 
         # return quantity_to_trade
-        return 1 
+        # if(trading_signal is Signal.BUY):
+        #     return 1
+        # elif(trading_signal is Signal.SELL):
+        #     return -1 
+        return 1
     
     def export_closed_trades(self):
         closed_trades = [{
