@@ -4,7 +4,7 @@ The `PerformanceManager` is the central component responsible for computing vari
 
 ### Parameters
 
-| Parameter       | Type       | Purpose                                                                           |
+| Parameter       | Type       | Description                                                                       |
 | --------------- | ---------- | --------------------------------------------------------------------------------- |
 | trades          | List(Dict) | A list of executed trade records, each being a dictionary with trade information. |
 | initial_capital | float      | The starting capital of the portfolio                                             |
@@ -23,7 +23,7 @@ The `PerformanceBase` class provides foundational calculations and data enrichme
 
 ### Parameters
 
-| Parameter       | Type       | Purpose                                                                           |
+| Parameter       | Type       | Description                                                                       |
 | --------------- | ---------- | --------------------------------------------------------------------------------- |
 | trades          | List(Dict) | A list of executed trade records, each being a dictionary with trade information. |
 | initial_capital | float      | The starting capital of the portfolio                                             |
@@ -31,7 +31,7 @@ The `PerformanceBase` class provides foundational calculations and data enrichme
 
 ### Methods
 
-| Method                        | Purpose                                                                                       |
+| Method                        | Description                                                                                   |
 | ----------------------------- | --------------------------------------------------------------------------------------------- |
 | append_fee(rate, type="both") | Adds a "fee" field to each trade based on fee type                                            |
 | append_pnl()                  | Calculates the net PnL per trade, adjusted for direction and fees, and appends a "pnl" field. |
