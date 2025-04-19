@@ -507,7 +507,7 @@ def clean_old_cache(cache_dir="cache/endpoints", max_age_seconds=3600):
 # print(regime_model.processed_data.tail())
 
 # # Test the FinalAlphaModel class
-model = FinalAlphaModelData(symbol='BTC',
+model = LogisticRegressionModelData(symbol='BTC',
                           start_time=datetime(2022, 12, 1, tzinfo=timezone.utc),
                           end_time=datetime(2023, 1, 4, tzinfo=timezone.utc),
                           window="24h")
@@ -525,8 +525,8 @@ print(df.head())
 # )
 # btc_data = benchmark.fetch_yfinance_data()
 
-data=BaseDataHandler.load_from_disc("/Users/pohsharon/Downloads/UMH/ohlc.csv")
-print(data.tail())
+# data=BaseDataHandler.load_from_disc("/Users/pohsharon/Downloads/UMH/ohlc.csv")
+# print(data.tail())
 '''
 Base Data & Regime Model Interval
 1m 3m 5m 10m 15m 30m 1h 2h 4h 6h 12h 1d 3d 1w 1M

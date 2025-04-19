@@ -9,7 +9,7 @@ import pandas as pd
 class PortfolioManager:
 
     def __init__(
-            self, 
+            self,
             portfolio : Portfolio = Portfolio()
         ):
         self.portfolio = portfolio
@@ -150,6 +150,62 @@ class PortfolioManager:
 
         return closed_trades
     
+    def update_portfolio(self, previous_data, current_data):
+        
+        executed_order = None
+        # Update position by row
+        if(len(self.portfolio.executed_orders) != 0):
+            executed_order = self.portfolio.executed_orders[-1]
+
+        if(len(self.portfolio.positions) == 0):
+            if(executed_order is None):
+                position = Position(Direction.NEUTRAL,0,0,0,0)
+            else:
+                if(executed_order.trading_signal is Signal.BUY ):
+                    position = Position(Direction.LONG, executed_order.quantity)
+                else:
+                    position = Position(Direction.SHORT, executed_order.quantity)
+            self.portfolio.positions.append(position)
+
+        else:
+            previous_position = self.portfolio.positions[-1]
+
+            updated_holdings = 0
+            if(executed_order is None):
+                updated_holdings = previous_position.size
+            else:
+                if(executed_order.trading_signal is Signal.BUY):
+                    updated_holdings = previous_position.size + executed_order.quantity
+                else:
+                    updated_holdings = previous_position.size - executed_order.quantity
+
+
+            direction = 0
+            if(updated_holdings > 0):
+                direction = 1
+            elif(updated_holdings < 0):
+                direction = -1
+            else:
+                direction = 0
+            
+            new_position = Position(direction, updated_holdings)
+
+            #calculate pnl
+            price_change = (current_data['close'] / previous_data['close']) -1
+            pnl = (price_change * previous_position.direction) - 0.0006 
+
+            # add new position
+            new_position.pnl = pnl
+            self.portfolio.positions.append(new_position)
+
+            # calculate equity and drawdown
+            equity = sum(position.pnl for position in self.portfolio.positions)
+            self.portfolio.max_equity = max(equity, self.portfolio.max_equity)
+            current_drawdown = equity - self.portfolio.max_equity
+
+            #update position
+            new_position.equity = equity
+            new_position.drawdown = current_drawdown  
 
     def get_max_drawdown(self):
         max_drawdown = float('inf')
