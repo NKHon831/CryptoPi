@@ -90,12 +90,13 @@ class BaseDataHandler:
                 print("📡 Binance Data fetched from API!")
 
             # Check for errors in the response
+            
             response.raise_for_status()
 
             data = response.json()
 
             if 'data' not in data or not data['data']:
-                print("⚠️ No 'data' returned in response.")
+                # print("⚠️ No 'data' returned in response.")
                 return pd.DataFrame()
 
             df = pd.json_normalize(data['data'])
@@ -104,7 +105,8 @@ class BaseDataHandler:
             expected_cols = ["start_time", "close", "high", "low", "open", "volume", ]
             missing_cols = [col for col in expected_cols if col not in df.columns]
             if missing_cols:
-                print(f"⚠️ Missing columns: {missing_cols}")
+                pass
+                # print(f"⚠️ Missing columns: {missing_cols}")
 
             # Convert timestamp
             df["start_time"] = pd.to_datetime(df["start_time"], unit="ms", utc=True)
@@ -369,7 +371,7 @@ class FinalAlphaModelData(BaseDataHandler):
 
         # Fetch data from each endpoint
         for endpoint, custom_params in self.endpoint_config.items():
-            print(f"Fetching: /{endpoint}")
+            # print(f"Fetching: /{endpoint}")
             url = f"{self.base_url}/{endpoint}"
             params = self.common_params
 
@@ -434,7 +436,7 @@ class FinalAlphaModelData(BaseDataHandler):
         # Convert timestamp to datetime
         if "timestamp" in self.processed_data.columns:
             self.processed_data["timestamp"] = pd.to_datetime(self.processed_data["timestamp"], unit="ms", utc=True)
-            print("✅ Timestamp column converted to datetime.")
+            # print("✅ Timestamp column converted to datetime.")
         else:
             print("⚠️ 'timestamp' column not found in processed_data.")
 

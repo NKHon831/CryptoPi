@@ -3,6 +3,15 @@ class Signal:
     SELL = 'SELL'
     HOLD = 'HOLD'
     TRADING_SIGNALS = [ BUY , SELL ]
+    SIGNALS = {
+        BUY : 1,
+        SELL : -1,
+        HOLD : 0
+    }
+
+    @staticmethod
+    def map_to_binary(trading_signal):
+        return Signal.SIGNALS.get(trading_signal)
 
 class ExecutionType:
     OPEN = 'OPEN'

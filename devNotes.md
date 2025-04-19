@@ -46,3 +46,7 @@ api_key = Config.NEWSAPI_API_KEY
 ```
 
 Note: You can refer to `news_retrieval.py` for a full example.
+
+# Documentation Guidelines
+
+Run `mkdocs serve --config-file cryptopi-docs\mkdocs.yml` to preview documentation pages

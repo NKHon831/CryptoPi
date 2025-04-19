@@ -5,7 +5,7 @@ from backtesting.constants import Signal
 class MomentumStrategy(StrategyBase):
     def __init__(self, df_historical_data , window = 20):
         self.df = df_historical_data
-        self.df['momentum'] = self.df['close']['BTC'].pct_change(periods = window).mean()
+        self.df['momentum'] = self.df['close'].pct_change(periods = window).mean()
         pass
 
     def generate_trading_signal(self, data, datetime):
@@ -16,3 +16,7 @@ class MomentumStrategy(StrategyBase):
             return Signal.BUY
         elif(momentum < 0):
             return Signal.SELL
+    
+        
+
+        #

@@ -29,7 +29,7 @@ class BrokerBase:
     def execute_order(self, order : Order, wallet, market_data, datetime):
         if(self.execution_success_model.is_order_executed_successfully()):
             order.status = OrderStatus.EXECUTED
-            order.executed_price = market_data['open']['BTC']
+            order.executed_price = market_data['open']
             order.executed_date_time = datetime 
             
         else: 

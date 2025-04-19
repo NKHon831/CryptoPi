@@ -13,15 +13,16 @@ class Main:
                           end_time=datetime(2025, 4, 15),
                           window="1h")
         
-        df_historical_data = dataHandler.get_data()
+        df_historical_data = dataHandler.get_processed_data()
 
         # predefined strategies for users
         moving_average_crossover_strategy = MovingAverageCrossoverStrategy(df_historical_data)
         buy_and_hold_strategy = BuyAndHoldStrategy()
         momentum_strategy = MomentumStrategy(df_historical_data)
+        
 
         sample_strategy = SampleStrategy()
-        backtest = BackTest(dataHandler, sample_strategy)
+        backtest = BackTest(dataHandler, moving_average_crossover_strategy)
         backtest.run() 
 
         #forward test later
