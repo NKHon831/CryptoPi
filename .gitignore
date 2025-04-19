@@ -14,3 +14,6 @@
 
 # Ignore Python cache files
 __pycache__/
+
+# Ignore exports folder
+exports/
