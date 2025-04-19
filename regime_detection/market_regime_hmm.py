@@ -3,7 +3,6 @@ import joblib
 from hmmlearn.hmm import GaussianHMM
 from sklearn.preprocessing import StandardScaler
 from scipy.stats import mode
-import os
 
 class MarketRegimeHMM:
     def __init__(self, n_states=3, features=None, model_path_prefix=None):
@@ -15,13 +14,13 @@ class MarketRegimeHMM:
 
     @staticmethod
     def load_and_prepare_data(path):
-        df_raw = pd.read_csv(path, header=None)
-        df_raw.columns = df_raw.iloc[0]
-        df = df_raw[3:].copy()
-        df.rename(columns={df.columns[0]: 'Datetime'}, inplace=True)
-        df['Datetime'] = pd.to_datetime(df['Datetime'], errors='coerce')
-        df.set_index('Datetime', inplace=True)
-        return df
+        df_raw = pd.read_csv(path)
+        # df_raw.columns = df_raw.iloc[0]
+        # df = df_raw[3:].copy()
+        # df.rename(columns={df.columns[0]: 'Datetime'}, inplace=True)
+        df_raw['timestamp'] = pd.to_datetime(df_raw['timestamp'], errors='coerce')
+        df_raw.set_index('timestamp', inplace=True)
+        return df_raw
     
     def fit(self, df):
         df_hmm = df[self.features].dropna()
