@@ -1,6 +1,8 @@
 from ..execution.Order import Order
 from ..execution.Trade import Trade
 from ..constants import MarketEntryType
+import pandas as pd
+import numpy as np
 
 class Portfolio:
     def __init__(
@@ -21,7 +23,6 @@ class Portfolio:
         self.closed_trades = []
         self.performance = None # Implement performance evaluation
         self.positions = []
-
         self.wallet = wallet
         self.holdings = holdings
         self.equity = self.get_equity_value()
@@ -29,6 +30,8 @@ class Portfolio:
         self.shorting_preference = shorting_preference
         self.initial_capital = initial_capital
         self.max_equity = 0.0
+        self.total_signal = 0
+        self.total_trading_signal = 0
     
     def get_equity_value(self, market_price = 0.0):
         return self.wallet + self.holdings * market_price
@@ -96,3 +99,4 @@ class Portfolio:
         print("LONG: ", len(self.open_trades[MarketEntryType.LONG]))
         print("SHORT: ", len(self.open_trades[MarketEntryType.SHORT]))
         print('Closed trades:', len(self.closed_trades))
+        print(f"Trading frequency : {(self.total_trading_signal/self.total_signal)*100}%")
