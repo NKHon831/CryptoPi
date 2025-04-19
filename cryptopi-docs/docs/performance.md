@@ -2,6 +2,13 @@
 
 The `PerformanceManager` is the central component responsible for computing various performance metrics for a backtested trading strategy. It aggregates results from multiple submodules to provide both scalar and time-series metrics in a clean and structured format.
 
+To create an instance of the class:
+
+```python
+from backtesting.performance.performance_manager import PerformanceManager
+performanceManager = PerformanceManager(trades=trades, initial_capital=100, benchmark_curve=None)
+```
+
 ### Parameters
 
 | Parameter       | Type       | Description                                                                       |
@@ -65,8 +72,21 @@ The TradeMetrics submodule is responsible for analyzing trade-level statistics, 
 
 #### Metrics
 
-| Metric | Description |
-| ------ | ----------- |
+##### Time Series
+
+| Metric        | Description                                                    |
+| ------------- | -------------------------------------------------------------- |
+| equity_curve  | Dictionary of daily equity values over the backtesting period. |
+| daily_returns | Daily return as a percentage change in equity.                 |
+
+##### Scalar
+
+| Metric                | Description                                                                |
+| --------------------- | -------------------------------------------------------------------------- |
+| cumulative_return     | Overall return from the strategy over the full trading period.             |
+| max_drawdown          | Largest observed drop from a peak to a trough in the equity curve.         |
+| volatility            | Standard deviation of daily returns, representing the risk or variability. |
+| annualized_volatility | Daily volatility scaled by √252 to reflect annualized risk.                |
 
 #### Methods
 

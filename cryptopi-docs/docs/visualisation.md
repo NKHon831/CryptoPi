@@ -2,6 +2,13 @@
 
 `MarketVisualisation` is a class designed to generate interactive charts using Plotly for visualizing market data, specifically price charts.
 
+To create an instance of the class:
+
+```python
+from backtesting.visualisation.visualisation import MarketVisualisation
+marketVisualiser = MarketVisualisation(marketData)
+```
+
 ### Parameters
 
 | Parameter   | Type         | Description                                                                                                                                        |
@@ -16,17 +23,31 @@
 
 `StrategyVisualisation` is an extension of MarketVisualisation that includes additional functionality for visualizing the performance of a trading strategy, including equity curves, daily returns, performance metrics, and price charts with signals.
 
+To create an instance as standalone class:
+
+```python
+from backtesting.visualisation.visualisation import StrategyVisualisation
+strategyVisualiser = StrategyVisualisation(performance_data, performance_metrics)
+```
+
+To create an instance as children class:
+
+```python
+from backtesting.visualisation.visualisation import StrategyVisualisation
+strategyVisualiser = StrategyVisualisation(performance_data, performance_metrics, market_data)
+```
+
 ### Methods
 
-| Method                                                                                  | Description                                                                                                    |
-| --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| plot_equity_curve(self, title="Equity Curve")                                           | Plots the equity curve for each strategy in the performance_data.                                              |
-| tabulate_metrics(self, title="Performance Metrics Summary")                             | Creates a table displaying the performance metrics for the strategy.                                           |
-| plot_daily_returns(self, title="Daily Returns")                                         | Plots the daily returns for each strategy in the performance_data.                                             |
-| plot_price_with_signals(self, title="Price Chart with Signals", simple_plot_only=False) | Plots the price chart along with buy and sell signals.                                                         |
-| plot(self, all=True, charts=None)                                                       | Plots the requested charts either all at once or a specific set of charts.                                     |
-| export(self, format="html", all=True, charts=None, export_dir="exports")                | Exports the charts in the specified format to the specified directory.                                         |
-| load_market_data(self, market_data)                                                     | Loads the market data into the market_data attribute and updates the chart_mapping to include the price chart. |
+| Method                                                                                  | Description                                                                                                                                                                                                  |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| plot_equity_curve(self, title="Equity Curve")                                           | Plots the equity curve for each strategy in the performance_data.                                                                                                                                            |
+| tabulate_metrics(self, title="Performance Metrics Summary")                             | Creates a table displaying the performance metrics for the strategy.                                                                                                                                         |
+| plot_daily_returns(self, title="Daily Returns")                                         | Plots the daily returns for each strategy in the performance_data.                                                                                                                                           |
+| plot_price_with_signals(self, title="Price Chart with Signals", simple_plot_only=False) | Plots the price chart along with buy and sell signals.                                                                                                                                                       |
+| plot(self, all=True, charts=None)                                                       | Plots the requested charts either all at once or a specific set of charts.                                                                                                                                   |
+| export(self, format="html", all=True, charts=None, export_dir="exports")                | Exports the charts in the specified format to the specified directory.                                                                                                                                       |
+| load_market_data(self, market_data)                                                     | Loads the market data into the market_data attribute and updates the chart_mapping to include the price chart. This converts the instance from a standalone class to a children class of `MarketVisualiser`. |
 
 ## ComparisonPlot
 
