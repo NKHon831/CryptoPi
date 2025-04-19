@@ -279,47 +279,38 @@ class FinalAlphaModelData(BaseDataHandler):
             "glassnode/addresses/min_100_count": {}, # add_100_btc
             "glassnode/addresses/new_non_zero_count": {}, # new_adds
             # "glassnode/addresses/accumulation_count": {}, # new_adds
-            # "glassnode/addresses/count": {}, # total_adds
-            # "glassnode/supply/active_more_1y_percent": {}, # s_last_act_1y
-            # "glassnode/blockchain/block_count": {}, # blocks_mined
-            # "glassnode/mining/hash_rate_mean": {}, # hash_rate
-            # "glassnode/supply/inflation_rate": {}, # inflat_rate
-            # "glassnode/mining/revenue_from_fees": {}, # min_rev_fees
-            # "glassnode/distribution/balance_exchanges": {}, # ex_balance
-            # "glassnode/distribution/balance_exchanges": {"a": "USDT"}, # ex_balance_usdt
-            # "glassnode/transactions/transfers_to_exchanges_count_pit": {}, # ex_deposits
-            # "glassnode/transactions/transfers_volume_to_exchanges_sum": {}, # ex_inflow_vol
-            # # ex_inflow_total
-            # # "glassnode/distribution/exchange_net_position_change_pit": {"i": "24h"}, (Only allow window=24h) # net_pos_chan
-            # # "glassnode/distribution/exchange_net_position_change_pit": {"i": "24h", "a": "USDT"}, (Only allow window=24h) # net_pos_usdt 
-            # "glassnode/transactions/transfers_volume_exchanges_net_pit": {}, # netflow_vol
-            # # "glassnode/transactions/transfers_volume_exchanges_net_pit": {"a": "USDT"}, # netflow_vol_usdt
-            # "glassnode/transactions/transfers_volume_from_exchanges_mean_pit": {}, # outflow_mean
-            # "glassnode/transactions/transfers_volume_from_exchanges_sum_pit": {}, # outflow_total
-            # "glassnode/transactions/transfers_from_exchanges_count_pit": {}, # withdrawals
-            # "glassnode/indicators/net_realized_profit_loss": {}, # profit_loss
-            # "glassnode/indicators/net_unrealized_profit_loss": {}, # nupl
-            # # utx_profit
-            # "glassnode/indicators/realized_loss": {}, # real_loss
-            # # p_l_ration
-            # "glassnode/indicators/realized_profit": {}, # real_profit
-            # "glassnode/indicators/sopr": {}, # sopr
-            # "glassnode/supply/loss_sum": {}, # supply_loss
-            # # "glassnode/indicators/difficulty_ribbon": {"i": "24h"}, (Only allows window=24h) # dif_ribbon
-            # # ent_adj_count
-            # "glassnode/transactions/transfers_volume_entity_adjusted_sum_pit": {}, # ent_vol_total
-            # "glassnode/transactions/transfers_volume_within_exchanges_sum_pit": {}, # in_house_vol
-            # "glassnode/transactions/transfers_volume_between_exchanges_sum_pit": {}, # inter_ex
-            # "glassnode/indicators/liveliness": {}, # liveliness
-            # "glassnode/indicators/nvt": {}, # nvt_ratio
-            # "glassnode/indicators/nvts": {}, # nvts_signal
-            # "glassnode/indicators/reserve_risk": {}, # reserve_risk
-            # "glassnode/indicators/rhodl_ratio": {}, # rhodl_ratio
+            "glassnode/addresses/count": {}, # total_adds
+            "glassnode/supply/active_more_1y_percent": {}, # s_last_act_1y
+            "glassnode/blockchain/block_count": {}, # blocks_mined
+            "glassnode/mining/hash_rate_mean": {}, # hash_rate
+            "glassnode/supply/inflation_rate": {}, # inflat_rate
+            "glassnode/mining/revenue_from_fees": {}, # min_rev_fees
+            "glassnode/distribution/balance_exchanges": {}, # ex_balance
+            "glassnode/distribution/balance_exchanges": {"a": "USDT"}, # ex_balance_usdt
+            "glassnode/transactions/transfers_to_exchanges_count_pit": {}, # ex_deposits
+            "glassnode/transactions/transfers_volume_to_exchanges_sum": {}, # ex_inflow_vol
+            "glassnode/transactions/transfers_volume_exchanges_net_pit": {}, # netflow_vol
+            "glassnode/transactions/transfers_volume_from_exchanges_mean_pit": {}, # outflow_mean
+            "glassnode/transactions/transfers_volume_from_exchanges_sum_pit": {}, # outflow_total
+            "glassnode/transactions/transfers_from_exchanges_count_pit": {}, # withdrawals
+            "glassnode/indicators/net_realized_profit_loss": {}, # profit_loss
+            "glassnode/indicators/net_unrealized_profit_loss": {}, # nupl
+            "glassnode/indicators/realized_loss": {}, # real_loss
+            "glassnode/indicators/realized_profit": {}, # real_profit
+            "glassnode/indicators/sopr": {}, # sopr
+            "glassnode/supply/loss_sum": {}, # supply_loss
+            "glassnode/transactions/transfers_volume_entity_adjusted_sum_pit": {}, # ent_vol_total
+            "glassnode/transactions/transfers_volume_within_exchanges_sum_pit": {}, # in_house_vol
+            "glassnode/transactions/transfers_volume_between_exchanges_sum_pit": {}, # inter_ex
+            "glassnode/indicators/liveliness": {}, # liveliness
+            "glassnode/indicators/nvt": {}, # nvt_ratio
+            "glassnode/indicators/nvts": {}, # nvts_signal
+            "glassnode/indicators/reserve_risk": {}, # reserve_risk
+            "glassnode/indicators/rhodl_ratio": {}, # rhodl_ratio
             # "glassnode/indicators/seller_exhaustion_constant": {}, # seller_exhaustion
-            # "glassnode/indicators/stock_to_flow_deflection": {}, # s_flow_def1
-            # # "glassnode/transactions/transfers_count": {}, # Not sure why does not support BTC # tra_count
-            # "glassnode/blockchain/utxo_created_count": {}, # utx_created
-            # "glassnode/indicators/velocity": {}, # velocity
+            "glassnode/indicators/stock_to_flow_deflection": {}, # s_flow_def1
+            "glassnode/blockchain/utxo_created_count": {}, # utx_created
+            "glassnode/indicators/velocity": {}, # velocity
         }
 
     def fetch_all_endpoints(self):
@@ -328,6 +319,7 @@ class FinalAlphaModelData(BaseDataHandler):
             "X-Api-Key": self.api_key
         }
 
+        print("Starting fetching data...")
         # Fetch data from each endpoint
         for endpoint, custom_params in self.endpoint_config.items():
             # print(f"Fetching: /{endpoint}")
@@ -424,21 +416,22 @@ class BenchmarkData:
 # # Test the FinalAlphaModel class
 # model = FinalAlphaModelData(symbol='BTC',
 #                           start_time=datetime(2020, 1, 1, tzinfo=timezone.utc),
-#                           end_time=datetime(2020, 1, 5, tzinfo=timezone.utc),
-#                           window="24h")
+#                           end_time=datetime(2023, 1, 1, tzinfo=timezone.utc),
+#                           window="1h")
 
 # df = model.fetch_all_endpoints()
-# model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
+# df.to_csv("final-alpha-model.csv", index=False)
+# # model.export("/Users/pohsharon/Downloads/UMH", "final_alpha") # Change path to your desired export path
 # print(df.head())
 
 # Benchmark Data
-benchmark = BenchmarkData(
-    symbol='BTC-USD',
-    start_time=datetime(2024, 3, 1),
-    end_time=datetime(2024, 4, 1),
-    interval='60m'
-)
-btc_data = benchmark.fetch_yfinance_data()
+# benchmark = BenchmarkData(
+#     symbol='BTC-USD',
+#     start_time=datetime(2024, 3, 1),
+#     end_time=datetime(2024, 4, 1),
+#     interval='60m'
+# )
+# btc_data = benchmark.fetch_yfinance_data()
 
 '''
 Base Data & Regime Model Interval
