@@ -42,12 +42,14 @@ class BackTest:
             index = df_historicalData.index[i]
             
             if (index <= self.end_backtest.replace(tzinfo=timezone.utc)):
-
+                
+                self.portfolioManager.portfolio.total_signal +=1
                 # Trading signal generation and Order creation for current row
                 trading_signal = self.strategy.generate_trading_signal(data, index)
                 df_historicalData.loc[index, 'trading_signal'] = Signal.map_to_binary(trading_signal)
 
                 if trading_signal in Signal.TRADING_SIGNALS:
+                    self.portfolioManager.portfolio.total_trading_signal +=1
                     self.portfolioManager.generate_order(self.dataHandler.symbol, trading_signal, data)
 
                 # pending orders execution
@@ -67,12 +69,15 @@ class BackTest:
             index = df_historicalData.index[i]
             
             if (index > self.end_backtest.replace(tzinfo=timezone.utc)):
+                self.portfolioManager2.portfolio.total_signal +=1
 
                 # Trading signal generation and Order creation for current row
                 trading_signal = self.strategy.generate_trading_signal(data, index)
                 df_historicalData.loc[index, 'trading_signal'] = Signal.map_to_binary(trading_signal)
 
                 if trading_signal in Signal.TRADING_SIGNALS:
+                    self.portfolioManager2.portfolio.total_trading_signal +=1
+
                     self.portfolioManager2.generate_order(self.dataHandler.symbol, trading_signal, data)
 
                 # pending orders execution
