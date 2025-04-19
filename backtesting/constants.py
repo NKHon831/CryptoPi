@@ -38,6 +38,11 @@ class MarketEntryType:
     LONG = 'LONG'
     SHORT = 'SHORT'
 
+class Direction:
+    LONG = 2
+    SHORT = 1
+    NEUTRAL = 0
+
 # class OrderExecutionStatus:
 #     OPEN = 'OPEN' 
 #     CLOSED = 'CLOSED'

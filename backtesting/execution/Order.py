@@ -17,7 +17,7 @@ class Order:
             executed_price : float = None,
     ):
         self.symbol = symbol
-        self.market_entry_type = MarketEntryType.LONG if trading_signal is Signal.BUY else MarketEntryType.SHORT
+        self.trading_signal = trading_signal
         self.quantity = quantity
         self.price_limit = price_limit
         self.stop_loss_price = stop_loss_price
