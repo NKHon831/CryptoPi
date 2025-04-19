@@ -6,7 +6,9 @@ nav:
       - DataHandler: datahandler.md
       - Strategy: strategy.md
       - Execution: execution.md
-      - Model: model.md
+      - Model:
+          - SentimentAnalysisModel: sentiment.md
+          - FinalAlphaModel: alpha.md
       - Performance: performance.md
       - Visualisation: visualisation.md
 theme: material
